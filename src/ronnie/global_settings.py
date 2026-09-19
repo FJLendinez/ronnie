@@ -89,6 +89,11 @@ LOGIN_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Messages (flash): storage path, minimum level and level→tag overrides
+MESSAGE_STORAGE = "ronnie.contrib.messages.storage.FallbackStorage"
+MESSAGE_LEVEL = 20  # INFO; lower-level messages are dropped
+MESSAGE_TAGS: dict[int, str] = {}
+
 # Sessions: "cookie" (signed, zero setup) | "db" | "cache" | dotted custom path
 SESSION_ENGINE = "cookie"
 

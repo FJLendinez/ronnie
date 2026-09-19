@@ -61,3 +61,21 @@ def profile(req):
 @login_required
 def protected(req):
     return P("protected-content")
+
+
+@rt
+def flash_save(req):
+    from fasthtml.common import Redirect
+
+    from ronnie.contrib.messages import messages
+
+    messages.success(req, "Saved!")
+    messages.info(req, "FYI", extra_tags="banner")
+    return Redirect("/pages/flash_show")
+
+
+@rt
+def flash_show(req):
+    from ronnie.contrib.messages import Alerts
+
+    return Alerts(req)
