@@ -72,8 +72,10 @@ class LazySettings:
     Nothing is imported or evaluated until the first attribute access.
     """
 
+    _wrapped: Settings | UserSettingsHolder | None
+
     def __init__(self) -> None:
-        self.__dict__["_wrapped"] = None
+        self._wrapped = None
 
     # -- setup ---------------------------------------------------------------
 
@@ -100,7 +102,6 @@ class LazySettings:
                 raise TypeError(f"Setting names must be UPPERCASE; got {name!r}")
             setattr(holder, name, value)
         self._wrapped = holder
-        self._explicit_setup = True
 
     # -- proxy protocol ------------------------------------------------------
 
@@ -113,11 +114,13 @@ class LazySettings:
     def SETTINGS_MODULE(self) -> str:
         if self._wrapped is None:
             self._setup()
+            assert self._wrapped is not None
         return getattr(self._wrapped, "SETTINGS_MODULE", "")
 
     def __getattr__(self, name: str) -> Any:
         if self._wrapped is None:
             self._setup()
+            assert self._wrapped is not None  # _setup configures or raises
         if name.startswith("_"):
             raise AttributeError(name)
         val = getattr(self._wrapped, name)
@@ -140,6 +143,7 @@ class LazySettings:
             return
         if self._wrapped is None:
             self._setup()
+            assert self._wrapped is not None
         self.__dict__.pop(name, None)
         setattr(self._wrapped, name, value)
 
@@ -148,6 +152,7 @@ class LazySettings:
             raise TypeError("can't delete _wrapped.")
         if self._wrapped is None:
             self._setup()
+            assert self._wrapped is not None
         self.__dict__.pop(name, None)
         delattr(self._wrapped, name)
 
