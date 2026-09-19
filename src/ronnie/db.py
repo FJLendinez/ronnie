@@ -1,0 +1,90 @@
+"""Database access from the ``DATABASES`` setting (MiniDataAPI backends).
+
+Engines:
+
+- ``sqlite`` (default; uses fastlite, bundled with FastHTML)
+- ``postgres`` (uses fastsql; install with ``ronnie[postgres]``)
+
+Table convention: each app's ``models.py`` lists its row dataclasses in
+``TABLES``; ``ronnie migrate`` creates/updates them with ``transform=True``.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from .core.exceptions import ImproperlyConfigured
+
+__all__ = ["collect_tables", "get_database", "install_tables"]
+
+_databases: dict[str, Any] = {}
+
+
+def get_database(alias: str = "default") -> Any:
+    """Return (and cache) the MiniDataAPI database object for ``alias``."""
+    from .conf import settings
+
+    if alias in _databases:
+        return _databases[alias]
+    try:
+        config = settings.DATABASES[alias]
+    except (KeyError, AttributeError):
+        raise ImproperlyConfigured(
+            f"DATABASES has no {alias!r} alias (and DEBUG-mode fallbacks are disabled)."
+        ) from None
+
+    engine = str(config.get("ENGINE", "sqlite")).lower()
+    name = config.get("NAME")
+    if not name:
+        raise ImproperlyConfigured(f"DATABASES[{alias!r}].NAME is required.")
+
+    if engine in ("sqlite", "fastlite"):
+        from fastlite import database
+
+        db = database(str(name))
+    elif engine in ("postgres", "postgresql", "fastsql"):
+        try:
+            from fastsql import Database
+        except ImportError as err:
+            raise ImproperlyConfigured(
+                "The postgres engine needs the fastsql extra: pip install 'ronnie[postgres]'"
+            ) from err
+        db = Database(str(name))
+    else:
+        raise ImproperlyConfigured(f"Unknown database ENGINE {engine!r} (use 'sqlite' or 'postgres').")
+
+    _databases[alias] = db
+    return db
+
+
+def collect_tables() -> list[tuple[str, type]]:
+    """Return ``(app_label, table_cls)`` pairs from every installed app's models."""
+    from .apps import apps
+
+    if not apps.ready:
+        import ronnie
+
+        ronnie.setup()
+    tables: list[tuple[str, type]] = []
+    for config in apps.get_app_configs():
+        module = config.models_module
+        if module is None:
+            continue
+        for table in getattr(module, "TABLES", []):
+            tables.append((config.label, table))
+    return tables
+
+
+def install_tables(db: Any = None) -> list[str]:
+    """Create/update every app table; return ``"label.Name"`` identifiers."""
+    db = db or get_database()
+    created = []
+    for label, table in collect_tables():
+        db.create(table, transform=True)
+        created.append(f"{label}.{table.__name__}")
+    return created
+
+
+def reset_databases_cache() -> None:
+    """Test helper: drop cached connections (e.g. after swapping DATABASES)."""
+    _databases.clear()

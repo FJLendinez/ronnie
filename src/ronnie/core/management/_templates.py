@@ -120,7 +120,8 @@ Convention: declare your row dataclasses here and list them in TABLES;
 
     @dataclass
     class Post:
-        title: str
+        id: int | None = None      # implicit primary key (MiniDataAPI convention)
+        title: str = ""
         body: str = ""
 
     TABLES: list[type] = [Post]

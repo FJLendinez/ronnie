@@ -28,6 +28,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "fastlite>=0.1",
     "python-fasthtml>=0.14,<0.15",
 ]
 
@@ -103,5 +104,5 @@ warn_unreachable = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["fasthtml.*", "fastcore.*", "fastlite.*", "redis.*", "argon2.*"]
+module = ["fasthtml.*", "fastcore.*", "fastlite.*", "fastsql.*", "redis.*", "argon2.*"]
 ignore_missing_imports = true

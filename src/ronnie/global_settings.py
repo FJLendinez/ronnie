@@ -37,3 +37,14 @@ MIDDLEWARE: list[str] = []
 
 # Static files served by the dev server (and an ASGI mount in prod)
 STATIC_URL = "/static"
+STATIC_ROOT: str | None = None  # e.g. BASE_DIR / "static"; mounted when the dir exists
+
+# Logging: None → Ronnie's DEFAULT_LOGGING; dict → passed to logging.config.dictConfig
+LOGGING: dict[str, "object"] | None = None
+
+# Sessions (cookie-based signed sessions until contrib.sessions is installed)
+SESSION_COOKIE_NAME = "ronnie_session"
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # two weeks, in seconds
+SESSION_COOKIE_SAMESITE = "lax"
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN: str | None = None

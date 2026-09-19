@@ -220,7 +220,14 @@ class BaseCommand:
             sys.exit(err.returncode)
 
     def execute(self, *args: Any, **options: Any) -> None:
-        """Run system checks then the command body."""
+        """Boot the environment if needed, run system checks, run the command."""
+        if self.requires_environment:
+            from ...apps import apps
+
+            if not apps.ready:
+                import ronnie
+
+                ronnie.setup()
         if self.requires_system_checks:
             self.check(
                 tags=None if self.requires_system_checks == "__all__" else list(self.requires_system_checks),

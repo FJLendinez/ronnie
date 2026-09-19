@@ -71,6 +71,8 @@ class TestBaseCommand:
 
     def test_command_error_returncode(self, capsys):
         class Failing(BaseCommand):
+            requires_environment = False
+
             def handle(self, *a, **kw):
                 raise CommandError("boom", returncode=3)
 
