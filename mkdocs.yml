@@ -1,0 +1,48 @@
+site_name: Ronnie
+site_description: All the batteries of a full-stack framework on top of FastHTML.
+repo_url: https://github.com/fjlendinez/ronnie
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+
+nav:
+  - Home: index.md
+  - Topics:
+      - Settings: topics/settings.md
+      - Applications: topics/applications.md
+      - Routing: topics/routing.md
+      - Management commands: topics/management-commands.md
+      - Middleware: topics/middleware.md
+      - Signals: topics/signals.md
+      - Security: topics/security.md
+      - Signing: topics/signing.md
+      - Password management: topics/passwords.md
+      - Sessions: topics/sessions.md
+      - Authentication: topics/authentication.md
+      - Messages: topics/messages.md
+      - Cache framework: topics/cache.md
+      - Background tasks: topics/tasks.md
+      - Admin: topics/admin.md
+      - Humanize: topics/humanize.md
+      - Redirects: topics/redirects.md
+      - Testing: topics/testing.md
+  - Reference:
+      - Settings reference: reference/settings.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - toc:
+      permalink: true

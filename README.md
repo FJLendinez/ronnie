@@ -84,7 +84,7 @@ class PostTests(RonnieTestCase):     # throwaway sqlite DB per test
 ## Design notes
 
 - **Composition over fork**: Ronnie configures FastHTML, never patches it
-  (see `docs/spikes/fasthtml-0.14.md` for the integration contract).
+  (see `engineering/fasthtml-0.14-spike.md` for the integration contract).
 - **No ORM**: tables are dataclasses over the MiniDataAPI (`TABLES` in each
   app's `models.py`; `ronnie migrate` creates/updates them).
 - **Django-format compatible** password hashes and signatures.

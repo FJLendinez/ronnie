@@ -45,6 +45,7 @@ dev = [
     "ruff>=0.6",
     "fakeredis>=2.23",
 ]
+docs = ["mkdocs-material>=9.5"]
 
 [project.scripts]
 ronnie = "ronnie.core.management:main"
@@ -119,7 +120,7 @@ module = ["fasthtml.*", "fastcore.*", "fastlite.*", "fastsql.*", "redis.*", "arg
 ignore_missing_imports = true
 
 # FastHTML view modules: untyped `req` params and verb-split get/post handlers
-# are framework conventions (see docs/spikes/fasthtml-0.14.md).
+# are framework conventions (see engineering/fasthtml-0.14-spike.md).
 [[tool.mypy.overrides]]
 module = ["ronnie.contrib.auth.views", "ronnie.contrib.*.views"]
 disable_error_code = ["no-untyped-def", "no-redef", "untyped-decorator", "assignment"]
