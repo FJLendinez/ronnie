@@ -11,10 +11,9 @@ class Command(BaseCommand):
     help = "Create or update tables declared by installed apps (TABLES in models.py)."
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from ronnie.db import get_database, install_tables
+        from ronnie.db import install_tables
 
-        db = get_database()
-        created = install_tables(db)
+        created = install_tables()
         if not created:
             self.stdout.write("No tables declared by installed apps.")
             return
