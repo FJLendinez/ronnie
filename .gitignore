@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ronnie projects (dev artifacts)
+*.sqlite3
+db.sqlite3
+.env
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
