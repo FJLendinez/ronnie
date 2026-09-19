@@ -90,16 +90,20 @@ def get_asgi_application() -> FastHTML:
     if not settings.DEBUG:
         exception_handlers[Exception] = _server_error
 
+    middleware = resolve_middleware(list(settings.MIDDLEWARE))
+    # Ronnie owns the session middleware placement (innermost) so CSRF/auth
+    # middlewares listed after it in MIDDLEWARE can read scope["session"].
+    from ..middleware.session import SessionMiddleware, is_session_middleware
+
+    if not any(is_session_middleware(m) for m in middleware):
+        middleware.append(Middleware(SessionMiddleware))
+
     app = FastHTML(
         debug=settings.DEBUG,
-        middleware=resolve_middleware(list(settings.MIDDLEWARE)),
+        middleware=middleware,
         exception_handlers=exception_handlers,
         secret_key=secret_key,
-        session_cookie=settings.SESSION_COOKIE_NAME,
-        max_age=settings.SESSION_COOKIE_AGE,
-        same_site=settings.SESSION_COOKIE_SAMESITE,
-        sess_https_only=settings.SESSION_COOKIE_SECURE,
-        sess_domain=settings.SESSION_COOKIE_DOMAIN,
+        sess_cls=None,  # sessions handled inside Ronnie's MIDDLEWARE stack
         title=f"Ronnie {__version__}",
     )
 

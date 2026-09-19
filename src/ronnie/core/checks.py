@@ -163,3 +163,43 @@ def check_debug_in_production(deployment_checks: bool = False) -> list[CheckMess
             )
         ]
     return []
+
+
+@register("security", deploy=True)
+def check_secure_settings_for_deploy(deployment_checks: bool = False) -> list[CheckMessage]:
+    """Warnings surfaced by `ronnie check --deploy` (safe-by-default nudges)."""
+    from ronnie.conf import settings
+
+    try:
+        locked = not settings.DEBUG
+    except Exception:
+        return []
+    if not locked:
+        return []
+
+    messages: list[CheckMessage] = []
+    if not settings.SECURE_SSL_REDIRECT:
+        messages.append(
+            Warning(
+                "SECURE_SSL_REDIRECT is False in deployment mode.",
+                hint="Redirect HTTP traffic to HTTPS at the app or proxy level.",
+                id="security.W001",
+            )
+        )
+    if not settings.SECURE_HSTS_SECONDS:
+        messages.append(
+            Warning(
+                "SECURE_HSTS_SECONDS is 0: no HSTS header.",
+                hint="Set e.g. SECURE_HSTS_SECONDS = 31536000 once TLS is stable.",
+                id="security.W002",
+            )
+        )
+    if not settings.SESSION_COOKIE_SECURE:
+        messages.append(
+            Warning(
+                "SESSION_COOKIE_SECURE is False.",
+                hint="Set SESSION_COOKIE_SECURE = True when serving over HTTPS.",
+                id="security.W003",
+            )
+        )
+    return messages

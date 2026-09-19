@@ -46,6 +46,14 @@ class RonnieTestClient:
     @property
     def _tc(self) -> TestClient:
         if self._client is None:
+            from ..conf import settings
+
+            # Test requests use Host: testserver — allow it (Django parity).
+            try:
+                if "testserver" not in settings.ALLOWED_HOSTS:
+                    settings.ALLOWED_HOSTS = [*settings.ALLOWED_HOSTS, "testserver"]
+            except Exception:
+                pass
             app = self._app
             if app is None:
                 from ..core.asgi import get_asgi_application

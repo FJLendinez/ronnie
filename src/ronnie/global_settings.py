@@ -33,7 +33,13 @@ ALLOWED_HOSTS: list[str] = []
 
 # Applications & middleware (strings = dotted paths, resolvable & overridable)
 INSTALLED_APPS: list[str] = []
-MIDDLEWARE: list[str] = []
+MIDDLEWARE: list[str] = [
+    "ronnie.middleware.security.SecurityMiddleware",
+    "ronnie.middleware.host.HostValidationMiddleware",
+    "ronnie.middleware.session.SessionMiddleware",
+    "ronnie.middleware.csrf.CsrfMiddleware",
+    "ronnie.middleware.clickjacking.XFrameOptionsMiddleware",
+]
 
 # Static files served by the dev server (and an ASGI mount in prod)
 STATIC_URL = "/static"
@@ -41,6 +47,39 @@ STATIC_ROOT: str | None = None  # e.g. BASE_DIR / "static"; mounted when the dir
 
 # Logging: None → Ronnie's DEFAULT_LOGGING; dict → passed to logging.config.dictConfig
 LOGGING: dict[str, "object"] | None = None
+
+# Security headers & TLS (django.middleware.security parity)
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+SECURE_SSL_REDIRECT = False
+SECURE_SSL_HOST: str | None = None
+SECURE_REDIRECT_EXEMPT: list[str] = []
+SECURE_PROXY_SSL_HEADER: tuple[str, str] | None = None
+SECURE_REFERRER_POLICY = "same-origin"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Host header validation
+USE_X_FORWARDED_HOST = False
+
+# Clickjacking
+X_FRAME_OPTIONS = "DENY"
+
+# CSRF
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS: list[str] = []
+CSRF_EXEMPT_PATHS: list[str] = []
+
+# Passwords
+PASSWORD_HASHERS: list[str] = [
+    "ronnie.core.passwords.hashers.PBKDF2PasswordHasher",
+    "ronnie.core.passwords.hashers.ScryptPasswordHasher",
+]
+AUTH_PASSWORD_VALIDATORS: list[dict[str, object]] | None = None  # None → Django defaults
 
 # Sessions (cookie-based signed sessions until contrib.sessions is installed)
 SESSION_COOKIE_NAME = "ronnie_session"

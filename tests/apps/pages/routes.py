@@ -1,4 +1,4 @@
-from fasthtml.common import P, Titled
+from fasthtml.common import Button, Form, Input, P, Titled
 
 from ronnie.core.routing import Router
 
@@ -25,3 +25,21 @@ def go():
     from fasthtml.common import Redirect
 
     return Redirect("/pages/")
+
+
+@rt
+def new(req):
+    from ronnie.middleware.csrf import CsrfToken
+
+    return Form(
+        CsrfToken(req),
+        Input(name="title"),
+        Button("Save"),
+        action="/pages/save",
+        method="post",
+    )
+
+
+@rt
+def save(title: str = ""):
+    return P(f"saved:{title}")

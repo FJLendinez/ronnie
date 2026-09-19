@@ -37,3 +37,11 @@ class CommandError(RonnieException):
 
 class PermissionDenied(RonnieException):
     """The user does not have permission to do something."""
+
+
+class ValidationError(RonnieException):
+    """Validation failed; ``messages`` holds a list of error strings."""
+
+    def __init__(self, messages: str | list[str]) -> None:
+        self.messages = [messages] if isinstance(messages, str) else list(messages)
+        super().__init__("; ".join(self.messages))
