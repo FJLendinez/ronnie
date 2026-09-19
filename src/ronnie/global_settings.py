@@ -105,6 +105,10 @@ MESSAGE_STORAGE = "ronnie.contrib.messages.storage.FallbackStorage"
 MESSAGE_LEVEL = 20  # INFO; lower-level messages are dropped
 MESSAGE_TAGS: dict[int, str] = {}
 
+# Admin
+ADMIN_URL = "/admin"
+ADMIN_SITE_HEADER = "Ronnie Administration"
+
 # Sessions: "cookie" (signed, zero setup) | "db" | "cache" | dotted custom path
 SESSION_ENGINE = "cookie"
 SESSION_CACHE_ALIAS = "default"  # for SESSION_ENGINE="cache"

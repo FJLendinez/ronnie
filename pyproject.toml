@@ -101,6 +101,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B008"]  # function calls in defaults are handy in fixtures
 "**/contrib/auth/views.py" = ["F811"]  # FastHTML verb-split pattern (get/post per path)
+"**/contrib/admin/views.py" = ["F811"]  # same verb-split pattern per admin path
 
 [tool.mypy]
 python_version = "3.10"
@@ -118,3 +119,18 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["ronnie.contrib.auth.views", "ronnie.contrib.*.views"]
 disable_error_code = ["no-untyped-def", "no-redef", "untyped-decorator", "assignment"]
+
+# Admin views: same FastHTML conventions plus dictly typed body params.
+[[tool.mypy.overrides]]
+module = ["ronnie.contrib.admin.views", "ronnie.contrib.admin.site"]
+disable_error_code = [
+    "no-untyped-def",
+    "no-redef",
+    "untyped-decorator",
+    "assignment",
+    "type-arg",
+    "misc",
+    "no-untyped-call",
+    "no-any-return",
+    "arg-type",
+]
