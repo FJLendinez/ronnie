@@ -201,17 +201,18 @@ class BaseCommand:
     def run_from_argv(self, argv: list[str]) -> None:
         """argv is [prog_name, subcommand, *cli_args] (Django-compatible)."""
         parser = self.create_parser(argv[0], argv[1])
-        options = vars(parser.parse_args(argv[2:]))
-        options.pop("version", None)
-        # Rebuild honoring parsed color flags.
-        self.stdout = OutputWrapper(getattr(self.stdout, "out", None) or sys.stdout)
-        self.stderr = OutputWrapper(getattr(self.stderr, "out", None) or sys.stderr, self.style.ERROR)
-        color = options.get("force_color", False) or (
-            not options.get("no_color", False) and _supports_color(getattr(self.stdout, "out", None))
-        )
-        self.style = Style(color)
-        self._called_from_command_line = True
+        options: dict[str, Any] = {}
         try:
+            options = vars(parser.parse_args(argv[2:]))
+            options.pop("version", None)
+            # Rebuild honoring parsed color flags.
+            self.stdout = OutputWrapper(getattr(self.stdout, "out", None) or sys.stdout)
+            self.stderr = OutputWrapper(getattr(self.stderr, "out", None) or sys.stderr, self.style.ERROR)
+            color = options.get("force_color", False) or (
+                not options.get("no_color", False) and _supports_color(getattr(self.stdout, "out", None))
+            )
+            self.style = Style(color)
+            self._called_from_command_line = True
             self.execute(*[], **options)
         except CommandError as err:
             if options.get("traceback"):

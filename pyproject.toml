@@ -71,6 +71,10 @@ source = ["src/ronnie"]
 branch = true
 
 [tool.coverage.report]
+omit = [
+    "src/ronnie/global_settings.py",       # declarations only
+    "src/ronnie/core/management/_templates.py",  # template literals only
+]
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
@@ -99,7 +103,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["B008"]  # function calls in defaults are handy in fixtures
+"tests/**" = ["B008", "RUF012"]  # fixtures and fake request classes
 "**/contrib/auth/views.py" = ["F811"]  # FastHTML verb-split pattern (get/post per path)
 "**/contrib/admin/views.py" = ["F811"]  # same verb-split pattern per admin path
 

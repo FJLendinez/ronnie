@@ -18,3 +18,8 @@ class XHeaderMiddleware:
             await send(message)
 
         await self.app(scope, receive, send_with_header)
+
+
+def screaming_keys(key: str, prefix: str, version: int) -> str:
+    """Custom cache key function for coverage tests."""
+    return f"{prefix}|{version}|{key.upper()}"
