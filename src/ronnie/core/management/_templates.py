@@ -17,6 +17,10 @@ PROJECT_TEMPLATE: dict[str, Template] = {
 """Management shim for $project_name (Ronnie)."""
 import os
 import sys
+from pathlib import Path
+
+# Make `$settings_module` importable from any cwd (project parent on sys.path).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def main():
@@ -52,11 +56,25 @@ ALLOWED_HOSTS: list[str] = []
 
 # Applications ("apps.<label>" for apps created with `ronnie startapp`).
 INSTALLED_APPS: list[str] = [
+    "ronnie.contrib.sessions",
+    "ronnie.contrib.messages",
+    "ronnie.contrib.auth",
+    "ronnie.contrib.admin",
+    "ronnie.contrib.redirects",
     # "apps.$first_app",
 ]
 
-# Middleware stack (dotted paths), outermost first. Ronnie contribs add theirs.
-MIDDLEWARE: list[str] = []
+# Middleware stack (dotted paths), outermost first.
+MIDDLEWARE: list[str] = [
+    "ronnie.middleware.security.SecurityMiddleware",
+    "ronnie.middleware.host.HostValidationMiddleware",
+    "ronnie.contrib.sessions.middleware.SessionMiddleware",
+    "ronnie.middleware.csrf.CsrfMiddleware",
+    "ronnie.contrib.auth.middleware.AuthMiddleware",
+    "ronnie.contrib.messages.middleware.MessagesMiddleware",
+    "ronnie.middleware.clickjacking.XFrameOptionsMiddleware",
+    "ronnie.contrib.redirects.middleware.RedirectFallbackMiddleware",
+]
 
 DATABASES = {
     "default": {
@@ -74,7 +92,10 @@ USE_TZ = True
     "config/asgi.py": Template(
         '''"""ASGI entry point for $project_name."""
 import os
+import sys
+from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 os.environ.setdefault("RONNIE_SETTINGS_MODULE", "$settings_module")
 
 from ronnie.core.asgi import get_asgi_application

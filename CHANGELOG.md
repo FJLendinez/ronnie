@@ -5,9 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] — 0.1.0 feature-complete
 
 ### Added
 
-- Project scaffolding: `pyproject.toml` (hatchling, `src` layout), tooling
-  config (ruff, mypy strict, pytest), CI-ready layout.
+- **Core**: LazySettings (`RONNIE_SETTINGS_MODULE`, callables, `override_settings`),
+  app registry (`AppConfig`, 3-phase populate, per-app routes/tasks autodiscovery),
+  system checks (`ronnie check [--deploy]`), signals.
+- **CLI**: `ronnie`/`manage.py` with `startproject`, `startapp`, `runserver`,
+  `shell`, `check`, `migrate`, `test`, `diffsettings`, `version`,
+  `generatesecretkey`, `createsuperuser`, `changepassword`, `clearsessions`,
+  `worker`, `beat`.
+- **ASGI factory**: `get_asgi_application()` (FastHTML + Ronnie middleware
+  stack, static files, custom 404/500, LOGGING dict-config).
+- **Security**: `Signer`/`TimestampSigner` (Django-format), security headers,
+  host validation, CSRF (session token, form/header, Origin checks), X-Frame-Options,
+  PBKDF2/scrypt/argon2 hashers, 4 password validators.
+- **contrib.sessions**: engines cookie (signed) / db / cache; `flush`,
+  `cycle_key`, `clearsessions`; TrackingSession saves-on-modify.
+- **contrib.auth**: User/AnonymousUser, ModelBackend, `authenticate/login/logout`,
+  `@login_required`/`@user_passes_test`/`@permission_required`, built-in
+  /accounts views (login/logout/password_change), session-hash invalidation.
+- **contrib.messages**: Django levels/tags, session/cookie/fallback storages,
+  `Alerts()` FT component, MessagesMiddleware.
+- **contrib.admin**: AdminSite/ModelAdmin (`list_display`, `search_fields`,
+  `list_filter`, `ordering`, pagination, `delete_selected`), introspected
+  forms, autodiscover, staff-only.
+- **contrib.humanize**: apnumber/intcomma/intword/naturalday/naturaltime/ordinal
+  with es/en locales; `HumanTime()`.
+- **contrib.redirects**: db-backed 404 fallback (301/302/410) + admin integration.
+- **Cache**: `CACHES`/`caches`/`cache`, backends locmem/filebased/redis/dummy,
+  `cache_page`, per-site `CacheMiddleware`, fragment caching.
+- **Testing**: `RonnieTestClient` (lazy, HTMX helper), `SimpleTestCase`/
+  `RonnieTestCase`, `override_settings`/`modify_settings`, assert helpers,
+  pytest plugin (`client`, `db` fixtures), `ronnie test` (pytest).
+- **Tasks**: `@task`/`.delay()`/`.call()`, brokers inline/thread/redis,
+  `AsyncResult` (cache-backed), retries with backoff, `ronnie worker`/`beat`,
+  TASKS_SCHEDULE intervals.
