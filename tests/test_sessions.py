@@ -141,12 +141,14 @@ class TestEngineResolution:
 
             resolve_engine("carrier-pigeon")
 
-    def test_cache_engine_hint(self):
-        from ronnie.contrib.sessions.engines import resolve_engine
-        from ronnie.core.exceptions import ImproperlyConfigured
+    def test_cache_engine_resolves(self):
+        from ronnie.conf import settings as ronnie_settings
 
-        with pytest.raises(ImproperlyConfigured, match="cache framework"):
-            resolve_engine("cache")
+        ronnie_settings.configure(SECRET_KEY="k", CACHES={})
+        from ronnie.contrib.sessions.engines import CacheSessionEngine, resolve_engine
+
+        engine = resolve_engine("cache")
+        assert isinstance(engine, CacheSessionEngine)
 
     def test_db_engine_check_fails_without_app(self):
         configure_cookie()

@@ -54,10 +54,7 @@ def resolve_engine(name: str) -> str | SessionEngine:
     if name == _DB_ENGINE:
         return DbSessionEngine()
     if name == _CACHE_ENGINE:
-        raise ImproperlyConfigured(
-            "SESSION_ENGINE='cache' requires the cache framework (ronnie.cache); "
-            "configure CACHES first (see the cache framework docs)."
-        )
+        return CacheSessionEngine()
     if "." in name:  # dotted path to a module/object exposing the protocol
         import importlib
 
@@ -150,3 +147,33 @@ class DbSessionEngine:
                 except ValueError:
                     continue
         return removed
+
+
+class CacheSessionEngine:
+    """Sessions stored in a cache alias (``LOCATION`` names the CACHES alias).
+
+    Expiry rides on the cache TTL, so ``clear_expired`` is a no-op.
+    """
+
+    def __init__(self) -> None:
+        from ...cache import caches as ronnie_caches
+        from ...conf import settings
+
+        alias = str(getattr(settings._wrapped, "SESSION_CACHE_ALIAS", None) or "default")
+        self._cache = ronnie_caches[alias]
+
+    def new_key(self) -> str:
+        return new_session_key()
+
+    def load(self, session_key: str) -> dict[str, Any] | None:
+        data = self._cache.get(f"ronnie.session:{session_key}")
+        return data if isinstance(data, dict) else None
+
+    def save(self, session_key: str, data: dict[str, Any], max_age: int) -> None:
+        self._cache.set(f"ronnie.session:{session_key}", data, max_age)
+
+    def delete(self, session_key: str) -> None:
+        self._cache.delete(f"ronnie.session:{session_key}")
+
+    def clear_expired(self) -> int:
+        return 0  # TTL-based expiry

@@ -89,6 +89,17 @@ LOGIN_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Cache framework (django.core.cache parity)
+CACHES: dict[str, dict[str, object]] = {
+    "default": {
+        "BACKEND": "ronnie.cache.backends.locmem.LocMemCache",
+        "LOCATION": "ronnie",
+    }
+}
+CACHE_MIDDLEWARE_ALIAS = "default"
+CACHE_MIDDLEWARE_SECONDS = 600
+CACHE_MIDDLEWARE_KEY_PREFIX = ""
+
 # Messages (flash): storage path, minimum level and level→tag overrides
 MESSAGE_STORAGE = "ronnie.contrib.messages.storage.FallbackStorage"
 MESSAGE_LEVEL = 20  # INFO; lower-level messages are dropped
@@ -96,6 +107,7 @@ MESSAGE_TAGS: dict[int, str] = {}
 
 # Sessions: "cookie" (signed, zero setup) | "db" | "cache" | dotted custom path
 SESSION_ENGINE = "cookie"
+SESSION_CACHE_ALIAS = "default"  # for SESSION_ENGINE="cache"
 
 # Sessions
 SESSION_COOKIE_NAME = "ronnie_session"
