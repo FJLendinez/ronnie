@@ -105,6 +105,15 @@ MESSAGE_STORAGE = "ronnie.contrib.messages.storage.FallbackStorage"
 MESSAGE_LEVEL = 20  # INFO; lower-level messages are dropped
 MESSAGE_TAGS: dict[int, str] = {}
 
+# Tasks
+TASKS_BROKER = "ronnie.tasks.brokers.inline.InlineBroker"
+TASKS_BROKER_URL: str | None = None  # redis://… when using RedisBroker
+TASKS_RESULT_BACKEND = "cache:default"
+TASKS_DEFAULT_QUEUE = "default"
+TASKS_MAX_RETRIES = 0
+TASKS_RETRY_BACKOFF = True
+TASKS_SCHEDULE: dict[str, dict[str, object]] = {}
+
 # Humanize
 HUMANIZE_LANGUAGE = "es"  # "es" | "en"
 

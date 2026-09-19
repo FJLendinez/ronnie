@@ -137,16 +137,19 @@ class AppConfig:
         models/tasks lazily (inside the method, not at module level).
         """
 
-    def import_models(self) -> None:
-        """Phase 2: import this app's models submodule if it exists."""
-        models_module_path = f"{self.name}.models"
+    def import_modules(self) -> None:
+        """Phase 2: import this app's models and tasks submodules if present."""
+        self.models_module = self._import_optional("models")
+        self._import_optional("tasks")
+
+    def _import_optional(self, suffix: str) -> ModuleType | None:
+        module_path = f"{self.name}.{suffix}"
         try:
-            self.models_module = importlib.import_module(models_module_path)
+            return importlib.import_module(module_path)
         except ImportError as exc:
-            name = getattr(exc, "name", None)
-            if name == models_module_path:
-                return  # no models.py — fine
-            raise  # models.py exists but is broken
+            if getattr(exc, "name", None) == module_path:
+                return None  # module doesn't exist — fine
+            raise  # module exists but is broken
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} '{self.label}'>"
@@ -183,9 +186,9 @@ class Apps:
             self.app_configs[config.label] = config
         self.apps_ready = True
 
-        # Phase 2: import models modules.
+        # Phase 2: import models and tasks modules.
         for config in self.app_configs.values():
-            config.import_models()
+            config.import_modules()
         self.models_ready = True
 
         # Phase 3: run ready() hooks.
