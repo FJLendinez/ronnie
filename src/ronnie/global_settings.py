@@ -105,6 +105,9 @@ MESSAGE_STORAGE = "ronnie.contrib.messages.storage.FallbackStorage"
 MESSAGE_LEVEL = 20  # INFO; lower-level messages are dropped
 MESSAGE_TAGS: dict[int, str] = {}
 
+# Humanize
+HUMANIZE_LANGUAGE = "es"  # "es" | "en"
+
 # Admin
 ADMIN_URL = "/admin"
 ADMIN_SITE_HEADER = "Ronnie Administration"
