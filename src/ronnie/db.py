@@ -18,7 +18,7 @@ from .core.exceptions import ImproperlyConfigured
 __all__ = ["collect_tables", "get_database", "get_table", "install_tables"]
 
 _databases: dict[str, Any] = {}
-_tables: dict[tuple[str, type], Any] = {}
+_tables: dict[tuple[str, type, str | None], Any] = {}
 
 
 def get_database(alias: str = "default") -> Any:
@@ -76,15 +76,21 @@ def collect_tables() -> list[tuple[str, type]]:
     return tables
 
 
-def get_table(cls: type, alias: str = "default") -> Any:
+def get_table(cls: type, alias: str = "default", pk: str | None = None) -> Any:
     """Return the MiniDataAPI table bound to a row dataclass (idempotent).
 
     Prefer this over ``database[cls]``: the object returned by ``create``
     carries the class binding needed for typed inserts and result rows.
+    ``pk`` names the primary-key column; by default the class attribute
+    ``pk_name`` is honoured, falling back to the ``id`` field.
     """
-    key = (alias, cls)
+    pk = pk or getattr(cls, "pk_name", None)
+    key = (alias, cls, pk)
     if key not in _tables:
-        _tables[key] = get_database(alias).create(cls, transform=True)
+        if pk is not None:
+            _tables[key] = get_database(alias).create(cls, pk=pk, transform=True)
+        else:  # implicit pk detection (the `id` field)
+            _tables[key] = get_database(alias).create(cls, transform=True)
     return _tables[key]
 
 

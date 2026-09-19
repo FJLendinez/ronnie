@@ -203,3 +203,23 @@ def check_secure_settings_for_deploy(deployment_checks: bool = False) -> list[Ch
             )
         )
     return messages
+
+
+@register("sessions")
+def check_db_session_engine(deployment_checks: bool = False) -> list[CheckMessage]:
+    from ronnie.apps import apps
+    from ronnie.conf import settings
+
+    try:
+        engine = settings.SESSION_ENGINE
+    except Exception:
+        return []
+    if engine == "db" and not apps.is_installed("ronnie.contrib.sessions"):
+        return [
+            Error(
+                "SESSION_ENGINE is 'db' but ronnie.contrib.sessions is not installed.",
+                hint="Add 'ronnie.contrib.sessions' to INSTALLED_APPS and run migrate.",
+                id="sessions.E001",
+            )
+        ]
+    return []

@@ -36,7 +36,7 @@ INSTALLED_APPS: list[str] = []
 MIDDLEWARE: list[str] = [
     "ronnie.middleware.security.SecurityMiddleware",
     "ronnie.middleware.host.HostValidationMiddleware",
-    "ronnie.middleware.session.SessionMiddleware",
+    "ronnie.contrib.sessions.middleware.SessionMiddleware",
     "ronnie.middleware.csrf.CsrfMiddleware",
     "ronnie.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -81,7 +81,10 @@ PASSWORD_HASHERS: list[str] = [
 ]
 AUTH_PASSWORD_VALIDATORS: list[dict[str, object]] | None = None  # None → Django defaults
 
-# Sessions (cookie-based signed sessions until contrib.sessions is installed)
+# Sessions: "cookie" (signed, zero setup) | "db" | "cache" | dotted custom path
+SESSION_ENGINE = "cookie"
+
+# Sessions
 SESSION_COOKIE_NAME = "ronnie_session"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # two weeks, in seconds
 SESSION_COOKIE_SAMESITE = "lax"

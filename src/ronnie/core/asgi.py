@@ -55,8 +55,16 @@ def _not_found(req: Any, exc: Exception) -> Any:
     )
 
 
-def _server_error(req: Any, exc: Exception) -> Any:  # pragma: no cover - rendering tested via 404
-    return Titled("500", Main(H1("Server error"), P("Something went wrong.")))
+def _server_error(req: Any, exc: Exception) -> Any:
+    # Plain Starlette response: FastHTML's FT wrapping of an Exception-keyed
+    # handler would pass the exception class as status_code.
+    from starlette.responses import HTMLResponse
+
+    return HTMLResponse(
+        "<!doctype html><html><head><title>500</title></head>"
+        "<body><h1>Server error</h1><p>Something went wrong.</p></body></html>",
+        status_code=500,
+    )
 
 
 def _mount_static(app: FastHTML, settings: Any) -> None:

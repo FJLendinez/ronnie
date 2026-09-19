@@ -43,3 +43,9 @@ def new(req):
 @rt
 def save(title: str = ""):
     return P(f"saved:{title}")
+
+
+@rt
+def counter(sess):
+    sess["n"] = sess.get("n", 0) + 1
+    return P(f"count:{sess['n']}")
