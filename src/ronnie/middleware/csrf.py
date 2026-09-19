@@ -75,6 +75,34 @@ def hx_csrf_headers(token: str) -> dict[str, str]:
     return {"X-CSRFToken": token}
 
 
+# Route patterns collected at app-build time from handlers decorated with
+# @csrf_exempt (path parameters become [^/]+ segments).
+_exempt_route_patterns: list[re.Pattern[str]] = []
+
+
+def register_exempt_route(path: str) -> None:
+    """Register a route path as CSRF-exempt (called during route mounting)."""
+    if not path.startswith("/"):
+        path = "/" + path  # routers may store unprefixed paths
+    pattern = re.sub(r"\{[^}]+\}", "[^/]+", path)
+    _exempt_route_patterns.append(re.compile(f"^{pattern}$"))
+
+
+def reset_exempts() -> None:
+    """Test helper: forget decorator-based exemptions."""
+    _exempt_route_patterns.clear()
+
+
+def csrf_exempt(view: Any) -> Any:
+    """Mark a handler as exempt from CSRF checking (like a view decorator).
+
+    Usable bare or with arguments; the route path it gets mounted under is
+    collected automatically when the application is built.
+    """
+    view._ronnie_csrf_exempt = True
+    return view
+
+
 class CsrfMiddleware:
     """Reject unsafe requests without a valid CSRF token (403)."""
 
@@ -122,6 +150,8 @@ class CsrfMiddleware:
     def _exempt(self, path: str) -> bool:
         from ..conf import settings
 
+        if any(pattern.fullmatch(path) for pattern in _exempt_route_patterns):
+            return True  # decorator-based exemption (@csrf_exempt)
         return any(re.search(pattern, path) for pattern in getattr(settings, "CSRF_EXEMPT_PATHS", None) or [])
 
     @staticmethod

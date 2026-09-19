@@ -65,7 +65,7 @@ def mount_routers(app: Any, registry: Apps) -> list[str]:
         routers = [obj for obj in vars(module).values() if isinstance(obj, APIRouter)]
         for router in routers:
             for entry in router.routes:
-                path = entry[1]
+                path, func = entry[1], entry[0]
                 verbs = _implied_methods(entry)
                 clashes = sorted(v for v in verbs if (path, v) in seen)
                 if clashes:
@@ -75,6 +75,10 @@ def mount_routers(app: Any, registry: Apps) -> list[str]:
                     )
                 for verb in verbs:
                     seen[(path, verb)] = config.label
+                if getattr(func, "_ronnie_csrf_exempt", False):
+                    from ..middleware.csrf import register_exempt_route
+
+                    register_exempt_route(path)
             router.to_app(app)
             mounted.extend(entry[1] for entry in router.routes)
     return mounted

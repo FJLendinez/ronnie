@@ -2,6 +2,7 @@ from fasthtml.common import Button, Form, Input, P, Titled
 
 from ronnie.contrib.auth.decorators import login_required
 from ronnie.core.routing import Router
+from ronnie.middleware.csrf import csrf_exempt
 
 rt = Router("pages")
 
@@ -79,3 +80,20 @@ def flash_show(req):
     from ronnie.contrib.messages import Alerts
 
     return Alerts(req)
+
+
+@rt
+@csrf_exempt
+def webhook(req):
+    return P("webhook-ok")
+
+
+@rt("/hook/{token}")
+@csrf_exempt
+def hook(req, token: str):
+    return P(f"hook-{token}")
+
+
+@rt
+def guarded_post(req):
+    return P("guarded-ok")

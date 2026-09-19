@@ -290,3 +290,28 @@ class TestCsrf:
     def test_get_requests_unaffected(self):
         with make_app() as client:
             assert client.get("/pages/new").status_code == 200
+
+
+class TestCsrfExemptDecorator:
+    def test_exempt_decorator_allows_post_without_token(self):
+        with make_app() as client:
+            response = client.post("/pages/webhook", data={"payload": "x"})
+            assert response.status_code == 200
+            assert "webhook-ok" in response.text
+
+    def test_exempt_decorator_with_path_params(self):
+        with make_app() as client:
+            response = client.post("/pages/hook/abc123", data={"payload": "x"})
+            assert response.status_code == 200
+            assert "hook-abc123" in response.text
+
+    def test_non_exempt_still_rejected(self):
+        with make_app() as client:
+            assert client.post("/pages/guarded_post", data={"x": "1"}).status_code == 403
+
+    def test_exemption_is_exact_not_prefix(self):
+        with make_app() as client:
+            # A different path must NOT inherit the exemption: CSRF rejects
+            # before routing, so an unrouted unsafe path yields 403, not 404.
+            response = client.post("/pages/webhook-extra", data={"x": "1"})
+            assert response.status_code == 403
