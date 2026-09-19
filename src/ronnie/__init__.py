@@ -28,5 +28,6 @@ def setup(settings_module: str | None = None) -> None:
     from . import conf
     from .apps import apps
 
-    conf.settings._setup(settings_module)
+    if not conf.settings.configured:
+        conf.settings._setup(settings_module)
     apps.populate(conf.settings.INSTALLED_APPS)

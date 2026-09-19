@@ -4,11 +4,11 @@ Mirrors django.core.exceptions where it makes sense.
 """
 
 __all__ = [
-    "RonnieException",
-    "ImproperlyConfigured",
     "AppRegistryNotReady",
     "CommandError",
+    "ImproperlyConfigured",
     "PermissionDenied",
+    "RonnieException",
 ]
 
 
