@@ -36,10 +36,28 @@ def _import_optional(dotted: str) -> Any:
         raise  # broken routes module: fail loudly
 
 
+_HTTP_VERBS = frozenset(["get", "post", "put", "delete", "patch", "head", "trace", "options"])
+
+
+def _implied_methods(entry: tuple[Any, ...]) -> frozenset[str]:
+    """Resolve the HTTP methods a router entry registers (FastHTML rules).
+
+    FastHTML decides in ``_add_route``: explicit methods win; a handler named
+    ``get``/``post``/... on an explicit path maps to that verb only; anything
+    else registers GET+POST.
+    """
+    methods, name = entry[2], entry[3]
+    if methods:
+        return frozenset([methods] if isinstance(methods, str) else methods)
+    if name in _HTTP_VERBS:
+        return frozenset([name])
+    return frozenset({"get", "post"})
+
+
 def mount_routers(app: Any, registry: Apps) -> list[str]:
     """Mount every app's routers onto ``app``; return the mounted route paths."""
     mounted: list[str] = []
-    seen: dict[tuple[str, frozenset[str] | None], str] = {}
+    seen: dict[tuple[str, str], str] = {}  # (path, verb) -> app label
     for config in registry.get_app_configs():
         module = _import_optional(f"{config.name}.routes") or _import_optional(f"{config.name}.views")
         if module is None:
@@ -47,14 +65,16 @@ def mount_routers(app: Any, registry: Apps) -> list[str]:
         routers = [obj for obj in vars(module).values() if isinstance(obj, APIRouter)]
         for router in routers:
             for entry in router.routes:
-                _path, _methods = entry[1], entry[2]
-                key = (_path, frozenset(_methods) if _methods else None)
-                if key in seen:
+                path = entry[1]
+                verbs = _implied_methods(entry)
+                clashes = sorted(v for v in verbs if (path, v) in seen)
+                if clashes:
                     raise ImproperlyConfigured(
-                        f"Duplicate route {_path!r} (methods={_methods or 'default'}) "
-                        f"declared by apps {seen[key]!r} and {config.label!r}."
+                        f"Duplicate route {path!r} ({', '.join(sorted(verbs))}) "
+                        f"declared by apps {seen[(path, clashes[0])]!r} and {config.label!r}."
                     )
-                seen[key] = config.label
+                for verb in verbs:
+                    seen[(path, verb)] = config.label
             router.to_app(app)
             mounted.extend(entry[1] for entry in router.routes)
     return mounted

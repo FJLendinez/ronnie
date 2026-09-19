@@ -1,5 +1,6 @@
 from fasthtml.common import Button, Form, Input, P, Titled
 
+from ronnie.contrib.auth.decorators import login_required
 from ronnie.core.routing import Router
 
 rt = Router("pages")
@@ -49,3 +50,14 @@ def save(title: str = ""):
 def counter(sess):
     sess["n"] = sess.get("n", 0) + 1
     return P(f"count:{sess['n']}")
+
+
+@rt
+def profile(req):
+    return P("public-profile")
+
+
+@rt
+@login_required
+def protected(req):
+    return P("protected-content")

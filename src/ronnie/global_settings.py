@@ -38,6 +38,7 @@ MIDDLEWARE: list[str] = [
     "ronnie.middleware.host.HostValidationMiddleware",
     "ronnie.contrib.sessions.middleware.SessionMiddleware",
     "ronnie.middleware.csrf.CsrfMiddleware",
+    "ronnie.contrib.auth.middleware.AuthMiddleware",
     "ronnie.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -80,6 +81,13 @@ PASSWORD_HASHERS: list[str] = [
     "ronnie.core.passwords.hashers.ScryptPasswordHasher",
 ]
 AUTH_PASSWORD_VALIDATORS: list[dict[str, object]] | None = None  # None → Django defaults
+
+# Authentication
+AUTH_USER_MODEL = "ronnie.contrib.auth.User"
+AUTHENTICATION_BACKENDS: list[str] = ["ronnie.contrib.auth.backends.ModelBackend"]
+LOGIN_URL = "/accounts/login"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Sessions: "cookie" (signed, zero setup) | "db" | "cache" | dotted custom path
 SESSION_ENGINE = "cookie"

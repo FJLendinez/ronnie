@@ -1,7 +1,5 @@
 """Database model for db-backed sessions."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
