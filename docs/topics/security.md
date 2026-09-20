@@ -95,7 +95,8 @@ headers are never overwritten.
 3. Over HTTPS the `Origin` (or `Referer`) must match the host or be listed
    in `CSRF_TRUSTED_ORIGINS`.
 
-Include the token in every form you write:
+Include the token in every form you write (`CsrfToken` is also available
+from `ronnie.common`):
 
 ```python
 from ronnie.middleware.csrf import CsrfToken

@@ -4,11 +4,24 @@ Every installed app exposes handlers through a `Router` in its `routes.py`
 (or `views.py`). Ronnie mounts them automatically when the application is
 built — there is no central URL table to maintain.
 
+## The import surface
+
+All handler imports come from `ronnie.common`: the complete component and
+response vocabulary (`P`, `Titled`, `Form`, `Redirect`, `serve`,
+`fast_app`, …) derived from the underlying FT stack, plus Ronnie's own
+additions (`Router`, `CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`).
+Application code never imports the underlying stack directly — one
+namespace, one import line:
+
+```python
+from ronnie.common import CsrfToken, Form, Input, P, Redirect, Router, Titled
+```
+
 ## Declaring routes
 
 ```python
 # apps/blog/routes.py
-from fasthtml.common import P, Titled
+from ronnie.common import P, Titled
 
 from ronnie.core.routing import Router
 

@@ -36,8 +36,8 @@ python manage.py runserver
 ## A taste
 
 ```python
-# apps/blog/routes.py — plain FastHTML handlers, zero framework ceremony
-from fasthtml.common import P, Titled
+# apps/blog/routes.py — plain typed handlers, zero framework ceremony
+from ronnie.common import P, Titled
 from ronnie.core.routing import Router
 
 rt = Router("blog")

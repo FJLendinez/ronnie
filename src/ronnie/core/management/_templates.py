@@ -119,7 +119,7 @@ class $class_name(AppConfig):
 """
     ),
     "routes.py": Template(
-        """from fasthtml.common import P, Titled
+        """from ronnie.common import P, Titled
 
 from ronnie.core.routing import Router
 

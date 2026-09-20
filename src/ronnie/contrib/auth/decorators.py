@@ -28,7 +28,7 @@ def _user_of(kwargs: dict[str, Any]) -> Any:
 
 
 def _redirect_to_login(kwargs: dict[str, Any], login_url: str, redirect_field_name: str) -> Any:
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     request = kwargs.get("req") or kwargs.get("request")
     next_path = request.url.path if request is not None else "/"

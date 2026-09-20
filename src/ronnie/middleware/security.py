@@ -39,7 +39,7 @@ class SecurityMiddleware:
             return
 
         if redirect := self._ssl_redirect(scope):
-            from starlette.responses import RedirectResponse
+            from ..common import RedirectResponse
 
             await RedirectResponse(redirect, status_code=301)(scope, receive, send)
             return

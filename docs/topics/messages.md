@@ -8,7 +8,7 @@ during one request and renders (and clears) them in the next.
 
 ```python
 from ronnie.contrib.messages import messages
-from fasthtml.common import Redirect
+from ronnie.common import Redirect
 
 @rt
 def save(req):
@@ -35,7 +35,7 @@ rendered class list.
 ## Rendering
 
 ```python
-from ronnie.contrib.messages import Alerts
+from ronnie.contrib.messages import Alerts   # also in ronnie.common
 
 def page(req):
     return Titled("Blog", Alerts(req), Main(...))

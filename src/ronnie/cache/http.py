@@ -13,9 +13,7 @@ import functools
 from collections.abc import Callable
 from typing import Any
 
-from fasthtml.common import HttpHeader
-from fasthtml.core import to_xml
-
+from ..common import HttpHeader, to_xml
 from . import caches
 
 __all__ = [

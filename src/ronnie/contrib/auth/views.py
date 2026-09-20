@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fasthtml.common import Article, Button, Div, Form, Input, Strong, Titled
-
+from ...common import Article, Button, Div, Form, Input, Strong, Titled
 from ...core.routing import Router
 from ..sessions import flush
 from .api import login as do_login
@@ -55,7 +54,7 @@ def post(req, username: str = "", password: str = "", next: str = ""):
     if user is None:
         return _login_form(req, error="Invalid username or password.", next_url=next)
     do_login(req, user)
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     target = next or settings.LOGIN_REDIRECT_URL
     return Redirect(target)
@@ -63,8 +62,7 @@ def post(req, username: str = "", password: str = "", next: str = ""):
 
 @rt("/logout")
 def post(req):
-    from fasthtml.common import Redirect
-
+    from ...common import Redirect
     from ...conf import settings
 
     flush(req)
@@ -77,7 +75,7 @@ def get(req):
 
     user = get_user_from_scope(req.scope)
     if not getattr(user, "is_authenticated", False):
-        from fasthtml.common import Redirect
+        from ...common import Redirect
 
         return Redirect("/accounts/login?next=/accounts/password_change")
     return Titled(
@@ -98,8 +96,7 @@ def get(req):
 
 @rt("/password_change")
 def post(req, old_password: str = "", new_password1: str = "", new_password2: str = ""):
-    from fasthtml.common import Redirect
-
+    from ...common import Redirect
     from ...conf import settings
     from ...core.exceptions import ValidationError
     from ...core.passwords import check_password, make_password, validate_password

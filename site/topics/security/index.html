@@ -1340,7 +1340,8 @@ headers are never overwritten.</p>
 <li>Over HTTPS the <code>Origin</code> (or <code>Referer</code>) must match the host or be listed
    in <code>CSRF_TRUSTED_ORIGINS</code>.</li>
 </ol>
-<p>Include the token in every form you write:</p>
+<p>Include the token in every form you write (<code>CsrfToken</code> is also available
+from <code>ronnie.common</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.middleware.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">CsrfToken</span>
 
 <span class="nd">@rt</span>

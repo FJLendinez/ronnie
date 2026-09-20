@@ -6,7 +6,7 @@ import dataclasses
 import datetime as dt
 from typing import Any
 
-from fasthtml.common import (
+from ...common import (
     H1,
     H2,
     A,
@@ -36,7 +36,6 @@ from fasthtml.common import (
     Tr,
     Ul,
 )
-
 from ...conf import settings
 from ...core.routing import Router
 from ..messages import Alerts
@@ -86,7 +85,7 @@ def _require_staff(req: Any) -> Any:
     user = req.scope.get("user")
     if user is not None and getattr(user, "is_staff", False):
         return None
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     return Redirect(f"/accounts/login?next={req.url.path}")
 
@@ -421,7 +420,7 @@ def post(req, app_label: str, model_name: str, data: dict):
             values[field.name] = False
     admin.save_model(req, values, change=False)
     admin.message_user(req, f"{model.__name__} added.")
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     return Redirect(f"/admin/{app_label}/{model_name}")
 
@@ -444,7 +443,7 @@ def post(req, app_label: str, model_name: str, pk: str, data: dict):
             setattr(instance, field.name, _coerce(field, data[field.name]))
     admin.save_model(req, instance, change=True)
     admin.message_user(req, f"{model.__name__} updated.")
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     return Redirect(f"/admin/{app_label}/{model_name}")
 
@@ -464,7 +463,7 @@ def delete_view(req, app_label: str, model_name: str, pk: str):
         return P("Object not found.")
     admin.delete_model(req, instance)
     admin.message_user(req, f"{model.__name__} deleted.", level="warning")
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     return Redirect(f"/admin/{app_label}/{model_name}")
 
@@ -485,6 +484,6 @@ def post(req, app_label: str, model_name: str, data: dict):
         for object_id in ids:
             table.delete(int(object_id))
         admin.message_user(req, f"Deleted {len(ids)} {model.__name__}(s).", level="warning")
-    from fasthtml.common import Redirect
+    from ...common import Redirect
 
     return Redirect(f"/admin/{app_label}/{model_name}")

@@ -225,9 +225,8 @@ class TestFileBasedSpecifics:
 
 class TestHttpHelpers:
     def test_cache_page_decorator(self, monkeypatch):
-        from fasthtml.common import P
-
         from ronnie.cache.http import cache_page
+        from ronnie.common import P
 
         calls = {"n": 0}
 
@@ -265,9 +264,8 @@ class TestHttpHelpers:
         assert view(req=FakeRequest()) == "written"
 
     def test_cache_fragment(self):
-        from fasthtml.common import Li, Ul
-
         from ronnie.cache.http import cache_fragment, make_fragment_key
+        from ronnie.common import Li, Ul
 
         calls = {"n": 0}
 

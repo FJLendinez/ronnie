@@ -72,7 +72,7 @@ def get_messages(request: Any, *, consume: bool = True) -> list[Message]:
 
 def Alerts(request: Any, extra: str = "") -> Any:
     """Render pending flash messages as alert divs (Pico-friendly)."""
-    from fasthtml.common import Div
+    from ...common import Div
 
     items = get_messages(request, consume=True)
     if not items:

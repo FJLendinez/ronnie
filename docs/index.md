@@ -50,11 +50,13 @@ line.
 
 ## A ten-second tour
 
-Handlers are plain FastHTML functions; Ronnie only adds the walls around them:
+Handlers are plain typed functions; every import comes from Ronnie's own
+`ronnie.common` surface (a direct derivation of the FT stack, extended with
+Ronnie's components):
 
 ```python
 # apps/blog/routes.py
-from fasthtml.common import P, Titled
+from ronnie.common import P, Titled
 from ronnie.core.routing import Router
 
 rt = Router("blog")

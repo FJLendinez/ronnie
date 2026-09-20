@@ -1143,7 +1143,7 @@ saved", "Checkout failed", "Welcome back". The messages app stores them
 during one request and renders (and clears) them in the next.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.contrib.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fasthtml.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
 
 <span class="nd">@rt</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
@@ -1193,7 +1193,7 @@ during one request and renders (and clears) them in the next.</p>
 production to silence info noise. <code>extra_tags</code> rides along into the
 rendered class list.</p>
 <h2 id="rendering">Rendering<a class="headerlink" href="#rendering" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.contrib.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Alerts</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.contrib.messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Alerts</span>   <span class="c1"># also in ronnie.common</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">page</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Titled</span><span class="p">(</span><span class="s2">"Blog"</span><span class="p">,</span> <span class="n">Alerts</span><span class="p">(</span><span class="n">req</span><span class="p">),</span> <span class="n">Main</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>

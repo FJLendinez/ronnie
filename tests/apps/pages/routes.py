@@ -1,5 +1,4 @@
-from fasthtml.common import Button, Form, Input, P, Titled
-
+from ronnie.common import Button, Form, Input, P, Titled
 from ronnie.contrib.auth.decorators import login_required
 from ronnie.core.routing import Router
 from ronnie.middleware.csrf import csrf_exempt
@@ -24,7 +23,7 @@ def echo_htmx(req):
 
 @rt
 def go():
-    from fasthtml.common import Redirect
+    from ronnie.common import Redirect
 
     return Redirect("/pages/")
 
@@ -66,8 +65,7 @@ def protected(req):
 
 @rt
 def flash_save(req):
-    from fasthtml.common import Redirect
-
+    from ronnie.common import Redirect
     from ronnie.contrib.messages import messages
 
     messages.success(req, "Saved!")

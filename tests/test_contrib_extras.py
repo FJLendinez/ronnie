@@ -74,8 +74,7 @@ class TestHumanize:
         assert naturaltime(now + dt.timedelta(minutes=1), language="en", now=now) == "in 1 minute"
 
     def test_ft_component(self):
-        from fasthtml.core import to_xml
-
+        from ronnie.common import to_xml
         from ronnie.contrib.humanize import HumanTime
 
         now = dt.datetime.now()

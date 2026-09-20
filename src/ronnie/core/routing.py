@@ -10,15 +10,14 @@ from __future__ import annotations
 import importlib
 from typing import Any
 
-from fasthtml.core import APIRouter, noop_body
-
 from ..apps import Apps
+from ..common import APIRouter, noop_body
 from ..core.exceptions import ImproperlyConfigured
 
 __all__ = ["Router", "mount_routers"]
 
 
-class Router(APIRouter):  # type: ignore[misc]
+class Router(APIRouter):  # type: ignore[misc,valid-type]
     """An ``APIRouter`` with a normalized prefix (``Router("blog")`` → ``/blog``)."""
 
     def __init__(self, prefix: str = "", body_wrap: Any = noop_body) -> None:

@@ -29,8 +29,7 @@ import secrets
 from typing import Any
 from urllib.parse import urlsplit
 
-from fasthtml.common import Hidden
-
+from ..common import Hidden
 from ..core.exceptions import ImproperlyConfigured
 
 __all__ = ["TOKEN_SESSION_KEY", "CsrfMiddleware", "CsrfToken", "csrf_token", "hx_csrf_headers"]
@@ -67,7 +66,8 @@ def csrf_token(request_or_session: Any) -> str:
 
 def CsrfToken(request_or_session: Any) -> Any:
     """Hidden input carrying the CSRF token for forms."""
-    return Hidden(name=FORM_FIELD, value=csrf_token(request_or_session))
+    token: str = csrf_token(request_or_session)
+    return Hidden(name=FORM_FIELD, value=token)  # type: ignore[misc]
 
 
 def hx_csrf_headers(token: str) -> dict[str, str]:

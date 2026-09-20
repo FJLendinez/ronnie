@@ -158,7 +158,7 @@ def naturaltime(
 
 def HumanTime(value: dt.datetime | dt.timedelta, language: str | None = None) -> Any:
     """FT ``<time>`` element with a natural rendering and ISO title."""
-    from fasthtml.common import Time
+    from ..common import Time
 
     iso = value.isoformat() if isinstance(value, dt.datetime) else ""
     return (

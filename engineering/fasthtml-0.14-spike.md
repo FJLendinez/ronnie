@@ -29,3 +29,20 @@ Verificado el 2026-09-19 contra `python-fasthtml==0.14.13` (Python 3.14).
   `router.<name>` (RouteFuncs los excluye). Documentar: nombres semánticos.
 - `app._add_route` es privado: cubrir con contract tests que fallen ruidoso
   al subir de versión de FastHTML.
+
+
+## Derivation contract (ronnie.common)
+
+`ronnie/common.py` is the canonical import surface for user code:
+
+- `from fasthtml.common import *` provides the derived vocabulary; Ronnie
+  modules import **only** through `ronnie.common` (never fasthtml directly).
+- Ronnie's `Router` explicitly shadows the ASGI `Router` re-exported by the
+  derived surface (bottom-import; safe because routing only needs names the
+  star import already binds).
+- Ronnie additions (`CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`, …)
+  resolve lazily via PEP 562 so `ronnie.common` imports no Ronnie packages
+  at module load — the import graph stays acyclic.
+- Contract tests (`tests/test_common.py`) pin: superset coverage, lazy
+  resolution, no contrib imports at load time, and end-to-end behavior of
+  handlers written exclusively against `ronnie.common`.

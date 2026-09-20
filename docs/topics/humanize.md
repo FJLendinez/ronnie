@@ -39,8 +39,8 @@ Details worth knowing:
 ## In handlers
 
 ```python
-from fasthtml.common import Li
-from ronnie.contrib.humanize import HumanTime, intcomma, ordinal
+from ronnie.common import Li
+from ronnie.contrib.humanize import HumanTime, intcomma, ordinal  # HumanTime also in ronnie.common
 
 @rt
 def stats(req):

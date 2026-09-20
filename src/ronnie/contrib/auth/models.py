@@ -46,7 +46,7 @@ class User:
         return perm in perms or f"{app_label}.*" in perms or (self.is_staff and codename.startswith("view"))
 
     def __ft__(self) -> Any:  # pragma: no cover - FT integration nicety
-        from fasthtml.common import Li
+        from ...common import Li
 
         return Li(self.username)
 

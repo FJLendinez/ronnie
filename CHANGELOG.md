@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`ronnie.common`**: the canonical import surface — a direct derivation of
+  the FT stack (`P`, `Titled`, `Form`, `Redirect`, `serve`, `fast_app`,
+  responses, …) extended with Ronnie's own `Router`, `CsrfToken`,
+  `csrf_exempt`, `Alerts` and `HumanTime`. Framework modules and generated
+  projects import exclusively from it; user code never imports fasthtml.
 - **Core**: LazySettings (`RONNIE_SETTINGS_MODULE`, callables, `override_settings`),
   app registry (`AppConfig`, 3-phase populate, per-app routes/tasks autodiscovery),
   system checks (`ronnie check [--deploy]`), signals.

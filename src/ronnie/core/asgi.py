@@ -15,13 +15,12 @@ import importlib
 from pathlib import Path
 from typing import Any
 
-from fasthtml.common import H1, Code, Main, P, Titled
-from fasthtml.core import FastHTML
 from starlette.middleware import Middleware
 from starlette.staticfiles import StaticFiles
 
 from .. import __version__
 from ..apps import apps
+from ..common import H1, Code, FastHTML, Main, P, Titled
 from ..core.exceptions import ImproperlyConfigured
 from ..core.logging import configure_logging
 from ..core.routing import mount_routers
