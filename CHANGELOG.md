@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`ronnie.common`**: the canonical import surface — a direct derivation of
-  the FT stack (`P`, `Titled`, `Form`, `Redirect`, `serve`, `fast_app`,
-  responses, …) extended with Ronnie's own `Router`, `CsrfToken`,
-  `csrf_exempt`, `Alerts` and `HumanTime`. Framework modules and generated
-  projects import exclusively from it; user code never imports fasthtml.
+- **`ronnie.common`**: the canonical import surface — the **entire FT
+  package** derived into one namespace: curated core (`P`, `Titled`, `Form`,
+  `Redirect`, `serve`, `fast_app`, responses, …) plus every other importable
+  submodule (`svg`, `pico`, `xtend`, `oauth`, `jupyter`, `live_reload`,
+  `cli`, core re-exports), extended with Ronnie's own `Router`,
+  `CsrfToken`, `csrf_exempt`, `Alerts` and `HumanTime`. Framework modules
+  and generated projects import exclusively from it; user code never
+  imports fasthtml. `derived_submodules()` reports the derivation set.
 - **Core**: LazySettings (`RONNIE_SETTINGS_MODULE`, callables, `override_settings`),
   app registry (`AppConfig`, 3-phase populate, per-app routes/tasks autodiscovery),
   system checks (`ronnie check [--deploy]`), signals.

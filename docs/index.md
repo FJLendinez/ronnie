@@ -51,8 +51,8 @@ line.
 ## A ten-second tour
 
 Handlers are plain typed functions; every import comes from Ronnie's own
-`ronnie.common` surface (a direct derivation of the FT stack, extended with
-Ronnie's components):
+`ronnie.common` surface — the entire FT package derived into one namespace
+(components, SVG, Pico, OAuth, responses) plus Ronnie's own helpers:
 
 ```python
 # apps/blog/routes.py

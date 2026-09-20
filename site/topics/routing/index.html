@@ -1186,14 +1186,21 @@
 (or <code>views.py</code>). Ronnie mounts them automatically when the application is
 built — there is no central URL table to maintain.</p>
 <h2 id="the-import-surface">The import surface<a class="headerlink" href="#the-import-surface" title="Permanent link">&para;</a></h2>
-<p>All handler imports come from <code>ronnie.common</code>: the complete component and
-response vocabulary (<code>P</code>, <code>Titled</code>, <code>Form</code>, <code>Redirect</code>, <code>serve</code>,
-<code>fast_app</code>, …) derived from the underlying FT stack, plus Ronnie's own
+<p>All handler imports come from <code>ronnie.common</code>: the <strong>entire underlying FT
+package</strong> derived into one namespace — HTML components (<code>P</code>, <code>Titled</code>,
+<code>Form</code>, …), the full SVG set (<code>Svg</code>, <code>Circle</code>, <code>Rect</code>, …), Pico components
+(<code>Card</code>, <code>Grid</code>, <code>Group</code>, <code>DialogX</code>, …), sitemap builders (<code>Urlset</code>, <code>Url</code>),
+OAuth clients (<code>GitHubAppClient</code>, <code>GoogleAppClient</code>, <code>consent_url</code>), notebook
+helpers (<code>nb_serve</code>, <code>JupyUvi</code>), response objects (<code>Redirect</code>,
+<code>RedirectResponse</code>), app factories (<code>fast_app</code>, <code>serve</code>) — plus Ronnie's own
 additions (<code>Router</code>, <code>CsrfToken</code>, <code>csrf_exempt</code>, <code>Alerts</code>, <code>HumanTime</code>).
 Application code never imports the underlying stack directly — one
 namespace, one import line:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">CsrfToken</span><span class="p">,</span> <span class="n">Form</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Redirect</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Titled</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Circle</span><span class="p">,</span> <span class="n">CsrfToken</span><span class="p">,</span> <span class="n">Form</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Redirect</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Titled</span>
 </code></pre></div>
+<p><code>ronnie.common.derived_submodules()</code> lists everything the surface derives
+from (submodules needing uninstalled optional dependencies are skipped
+gracefully).</p>
 <h2 id="declaring-routes">Declaring routes<a class="headerlink" href="#declaring-routes" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># apps/blog/routes.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">P</span><span class="p">,</span> <span class="n">Titled</span>

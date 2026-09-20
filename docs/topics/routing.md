@@ -6,16 +6,24 @@ built — there is no central URL table to maintain.
 
 ## The import surface
 
-All handler imports come from `ronnie.common`: the complete component and
-response vocabulary (`P`, `Titled`, `Form`, `Redirect`, `serve`,
-`fast_app`, …) derived from the underlying FT stack, plus Ronnie's own
+All handler imports come from `ronnie.common`: the **entire underlying FT
+package** derived into one namespace — HTML components (`P`, `Titled`,
+`Form`, …), the full SVG set (`Svg`, `Circle`, `Rect`, …), Pico components
+(`Card`, `Grid`, `Group`, `DialogX`, …), sitemap builders (`Urlset`, `Url`),
+OAuth clients (`GitHubAppClient`, `GoogleAppClient`, `consent_url`), notebook
+helpers (`nb_serve`, `JupyUvi`), response objects (`Redirect`,
+`RedirectResponse`), app factories (`fast_app`, `serve`) — plus Ronnie's own
 additions (`Router`, `CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`).
 Application code never imports the underlying stack directly — one
 namespace, one import line:
 
 ```python
-from ronnie.common import CsrfToken, Form, Input, P, Redirect, Router, Titled
+from ronnie.common import Card, Circle, CsrfToken, Form, P, Redirect, Router, Titled
 ```
+
+`ronnie.common.derived_submodules()` lists everything the surface derives
+from (submodules needing uninstalled optional dependencies are skipped
+gracefully).
 
 ## Declaring routes
 

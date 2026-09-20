@@ -1161,8 +1161,8 @@ security headers and a working admin at <code>/admin/</code> — before you writ
 line.</p>
 <h2 id="a-ten-second-tour">A ten-second tour<a class="headerlink" href="#a-ten-second-tour" title="Permanent link">&para;</a></h2>
 <p>Handlers are plain typed functions; every import comes from Ronnie's own
-<code>ronnie.common</code> surface (a direct derivation of the FT stack, extended with
-Ronnie's components):</p>
+<code>ronnie.common</code> surface — the entire FT package derived into one namespace
+(components, SVG, Pico, OAuth, responses) plus Ronnie's own helpers:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># apps/blog/routes.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">P</span><span class="p">,</span> <span class="n">Titled</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.core.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>

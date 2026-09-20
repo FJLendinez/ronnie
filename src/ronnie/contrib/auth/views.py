@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...common import Article, Button, Div, Form, Input, Strong, Titled
+from ...common import Button, Card, Div, Form, Input, Strong, Titled
 from ...core.routing import Router
 from ..sessions import flush
 from .api import login as do_login
@@ -26,7 +26,7 @@ def _login_form(req: Any, error: str = "", next_url: str = "") -> Any:
     error_block = Div(Strong(error), style="color:#b3261e") if error else ""
     return Titled(
         "Sign in",
-        Article(
+        Card(
             Form(
                 CsrfToken(req),
                 Input(type="hidden", name="next", value=next_url),
@@ -80,7 +80,7 @@ def get(req):
         return Redirect("/accounts/login?next=/accounts/password_change")
     return Titled(
         "Change password",
-        Article(
+        Card(
             Form(
                 CsrfToken(req),
                 Input(type="password", name="old_password", placeholder="Current password"),

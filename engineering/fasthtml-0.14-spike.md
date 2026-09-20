@@ -33,16 +33,24 @@ Verificado el 2026-09-19 contra `python-fasthtml==0.14.13` (Python 3.14).
 
 ## Derivation contract (ronnie.common)
 
-`ronnie/common.py` is the canonical import surface for user code:
+`ronnie/common.py` is the canonical import surface for user code, deriving
+the **whole fasthtml package**:
 
-- `from fasthtml.common import *` provides the derived vocabulary; Ronnie
-  modules import **only** through `ronnie.common` (never fasthtml directly).
+- `from fasthtml.common import *` provides the curated core; then every
+  other importable `fasthtml.*` submodule is walked (alphabetically,
+  `_`-prefixed and `_modidx` skipped) and its public names merged
+  first-wins — the curated surface keeps precedence. Submodules with
+  uninstalled optional dependencies (e.g. `stripe_otp` without `stripe`)
+  are skipped gracefully and reported by `derived_submodules()`.
+- Ronnie modules import **only** through `ronnie.common` (never fasthtml
+  directly).
 - Ronnie's `Router` explicitly shadows the ASGI `Router` re-exported by the
   derived surface (bottom-import; safe because routing only needs names the
   star import already binds).
 - Ronnie additions (`CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`, …)
   resolve lazily via PEP 562 so `ronnie.common` imports no Ronnie packages
   at module load — the import graph stays acyclic.
-- Contract tests (`tests/test_common.py`) pin: superset coverage, lazy
-  resolution, no contrib imports at load time, and end-to-end behavior of
-  handlers written exclusively against `ronnie.common`.
+- Contract tests (`tests/test_common.py`) pin: every public name of every
+  importable `fasthtml.*` submodule is available, lazy resolution, no
+  contrib imports at load time, and end-to-end behavior of handlers
+  (including SVG routes) written exclusively against `ronnie.common`.
