@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Enables GitHub Pages on first run (build_type=workflow), so the
+      # deploy job below doesn't 404 on repositories where Pages is off.
+      - uses: actions/configure-pages@v5
       - uses: astral-sh/setup-uv@v5
       - name: Install docs toolchain
         run: uv sync --group docs --no-dev
