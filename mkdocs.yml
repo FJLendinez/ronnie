@@ -24,6 +24,7 @@ nav:
       - Settings: topics/settings.md
       - Applications: topics/applications.md
       - Routing: topics/routing.md
+      - Migrations: topics/migrations.md
       - Management commands: topics/management-commands.md
       - Middleware: topics/middleware.md
       - Signals: topics/signals.md

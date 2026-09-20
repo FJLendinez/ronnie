@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Real migrations**: `ronnie makemigrations` (autodetector + file writer),
+  `ronnie migrate` (transactional executor, `--dry-run`, `--fake`,
+  `--fake-initial`, rollback via `ronnie migrate app zero|NNNN`),
+  `ronnie showmigrations`, `ronnie sqlmigrate`. Applied state is recorded
+  in the `ronnie_migration` table. Operations: `CreateTable`, `DeleteTable`,
+  `AddField`, `RemoveField`, `RenameField`, `AlterField` (sqlite rebuild),
+  `RunPython`, `RunSQL`. Contrib apps (`auth`, `sessions`, `redirects`)
+  ship their own `0001_initial.py`. The previous auto-transform behaviour
+  is no longer what `ronnie migrate` does (it was not a migration system).
+
 ## [0.1.0] — 2026-09-20
 
 ### Added

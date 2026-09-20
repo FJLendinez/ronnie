@@ -49,6 +49,7 @@ jobs:
           p.write_text(p.read_text().replace('    # \"apps.blog\",', '    \"apps.blog\",'))
           from io import StringIO
           from ronnie.core.management import call_command
+          call_command('makemigrations', stdout=StringIO())
           call_command('migrate', stdout=StringIO())
           from starlette.testclient import TestClient
           from config.asgi import application

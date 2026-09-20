@@ -317,7 +317,7 @@ class TestCommandsWithSideEffects:
         with pytest.raises(CommandError, match="SETTINGS_MODULE"):
             command._asgi_app_path()
 
-    def test_migrate_no_tables_message(self, tmp_path):
+    def test_migrate_without_migrations_message(self, tmp_path):
         import io
 
         conf.settings.INSTALLED_APPS = ["apps.news"]
@@ -329,7 +329,7 @@ class TestCommandsWithSideEffects:
         ronnie.setup()
         out = io.StringIO()
         call_command("migrate", stdout=out)
-        assert "No tables" in out.getvalue()
+        assert "No migrations found" in out.getvalue()
 
     def test_check_command_writes_messages(self, monkeypatch):
         import io

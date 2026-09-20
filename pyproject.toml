@@ -113,6 +113,8 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B008", "RUF012"]  # fixtures and fake request classes
 "**/contrib/auth/views.py" = ["F811"]  # FastHTML verb-split pattern (get/post per path)
+"**/migrations/*.py" = ["RUF012"]  # generated files: mutable class attrs are the format
+"ronnie/migrations/__init__.py" = ["RUF012"]
 "**/contrib/admin/views.py" = ["F811"]  # same verb-split pattern per admin path
 
 [tool.mypy]

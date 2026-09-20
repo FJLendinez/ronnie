@@ -151,6 +151,7 @@ Convention: declare your row dataclasses here and list them in TABLES;
 TABLES: list[type] = []
 '''
     ),
+    "migrations/__init__.py": Template('"""Migrations for this app."""\n'),
     "tests/__init__.py": Template(""),
     "tests/test_routes.py": Template(
         """from ronnie.testing import RonnieTestClient

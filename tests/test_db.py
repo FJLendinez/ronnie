@@ -7,7 +7,7 @@ from io import StringIO
 
 from ronnie.conf import settings
 from ronnie.core.management import call_command
-from ronnie.db import get_database, install_tables
+from ronnie.db import get_database
 
 
 def configure_with_db(tmp_path):
@@ -59,18 +59,37 @@ class TestGetDatabase:
 
 
 class TestMigrate:
-    def test_creates_tables(self, tmp_path):
-        path = configure_with_db(tmp_path)
-        out = StringIO()
-        call_command("migrate", stdout=out)
-        assert "shop.Product" in out.getvalue()
-        con = sqlite3.connect(path)
-        tables = [row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='table'")]
-        assert any("product" in name.lower() for name in tables)
+    def test_makemigrations_and_migrate_flow(self, tmp_path, monkeypatch):
 
-    def test_install_tables_transform(self, tmp_path):
-        configure_with_db(tmp_path)
-        created = install_tables()
-        assert created == ["shop.Product"]
-        # Second run is idempotent (transform=True handles drift).
-        assert install_tables() == ["shop.Product"]
+        (tmp_path / "inv").mkdir()
+        (tmp_path / "inv" / "__init__.py").write_text("")
+        (tmp_path / "inv" / "models.py").write_text(
+            "from dataclasses import dataclass\n\n\n"
+            "@dataclass\nclass Widget:\n"
+            "    id: int | None = None\n"
+            '    label: str = ""\n\n\n'
+            "TABLES: list[type] = [Widget]\n"
+        )
+        monkeypatch.syspath_prepend(str(tmp_path))
+        settings.configure(
+            SECRET_KEY="k",
+            INSTALLED_APPS=["inv"],
+            MIDDLEWARE=[],
+            DATABASES={"default": {"ENGINE": "sqlite", "NAME": tmp_path / "w.db"}},
+        )
+        import ronnie
+        from ronnie.apps import apps
+
+        apps.clear_data()
+        ronnie.setup()
+
+        out = StringIO()
+        call_command("makemigrations", stdout=out)
+        assert (tmp_path / "inv" / "migrations" / "0001_initial.py").is_file()
+
+        call_command("migrate", stdout=out)
+        con = sqlite3.connect(str(tmp_path / "w.db"))
+        tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+        assert "widget" in tables and "ronnie_migration" in tables
+        recorded = list(con.execute("SELECT app, name FROM ronnie_migration"))
+        assert ("inv", "0001_initial") in [(str(a), str(b)) for a, b in recorded]
