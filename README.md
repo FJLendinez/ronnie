@@ -1,5 +1,11 @@
 # Ronnie
 
+[![CI](https://github.com/fjlendinez/ronnie/actions/workflows/ci.yml/badge.svg)](https://github.com/fjlendinez/ronnie/actions/workflows/ci.yml)
+[![Docs](https://github.com/fjlendinez/ronnie/actions/workflows/docs.yml/badge.svg)](https://github.com/fjlendinez/ronnie/actions/workflows/docs.yml)
+[![PyPI](https://img.shields.io/pypi/v/python-ronnie.svg)](https://pypi.org/project/python-ronnie/)
+[![Python](https://img.shields.io/pypi/pyversions/python-ronnie.svg)](https://pypi.org/project/python-ronnie/)
+[![License: MIT](https://img.shields.io/pypi/l/python-ronnie.svg)](LICENSE)
+
 **All the batteries of Django on top of FastHTML.**
 
 Ronnie layers Django's battle-tested patterns onto FastHTML — everything you
@@ -90,10 +96,25 @@ class PostTests(RonnieTestCase):     # throwaway sqlite DB per test
 - **Django-format compatible** password hashes and signatures.
 - Extras: `ronnie[redis]`, `ronnie[argon2]`, `ronnie[postgres]`.
 
+## Documentation
+
+Read the full documentation (topics + settings reference) at
+**<https://fjlendinez.github.io/ronnie/>** — or build it locally with
+`uv sync --group docs && uv run mkdocs serve`.
+
 ## Status
 
-Alpha (see [PLAN.md](PLAN.md) for the roadmap and per-phase decisions).
-Tested with 265+ tests, `mypy --strict` clean, ruff clean.
+Alpha — see [PLAN.md](PLAN.md) for the roadmap and [CHANGELOG.md](CHANGELOG.md)
+for what shipped. 396 tests, `mypy --strict` clean, ruff clean, 85% coverage.
+
+## Releasing
+
+1. Update `CHANGELOG.md`, set the version in `pyproject.toml` and
+   `src/ronnie/__init__.py`.
+2. Tag `vX.Y.Z` and create a GitHub Release — the
+   [publish workflow](.github/workflows/pypi.yml) builds, checks and uploads
+   to PyPI via trusted publishing (configure the `pypi` environment + OIDC
+   once in PyPI → Publishing).
 
 ## License
 

@@ -1,6 +1,8 @@
 site_name: Ronnie
 site_description: All the batteries of a full-stack framework on top of FastHTML.
+site_url: https://fjlendinez.github.io/ronnie/
 repo_url: https://github.com/fjlendinez/ronnie
+repo_name: fjlendinez/ronnie
 
 theme:
   name: material

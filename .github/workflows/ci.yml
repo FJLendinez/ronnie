@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check src tests
+          uv run ruff format --check src tests
+      - name: Type-check
+        if: matrix.python-version == '3.14'
+        run: uv run mypy
+      - name: Run tests
+        run: uv run pytest -q
+      - name: Smoke: startproject → startapp → migrate → request
+        if: matrix.python-version == '3.14'
+        run: |
+          uv pip install -e . -q
+          ronnie startproject smokesite /tmp
+          cd /tmp/smokesite
+          ronnie startapp blog
+          python - <<'PY'
+          import os, re, sys
+          from pathlib import Path
+          sys.path.insert(0, ".")
+          os.environ["RONNIE_SETTINGS_MODULE"] = "config.settings"
+          settings = Path("config/settings.py")
+          settings.write_text(settings.read_text().replace('    # "apps.blog",', '    "apps.blog",'))
+          from io import StringIO
+          from ronnie.core.management import call_command
+          call_command("migrate", stdout=StringIO())
+          from starlette.testclient import TestClient
+          from config.asgi import application
+          with TestClient(application) as client:
+              assert client.get("/blog/").status_code == 200
+          print("smoke OK")
+          PY

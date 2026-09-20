@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "python-ronnie"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Django-style framework layer on top of FastHTML: settings, apps, commands, built-in security, contrib packages, cache, testing and tasks."
 readme = "README.md"
 license = "MIT"
@@ -55,10 +55,17 @@ ronnie = "ronnie.testing.pytest_plugin"
 
 [project.urls]
 Homepage = "https://github.com/fjlendinez/ronnie"
-Documentation = "https://github.com/fjlendinez/ronnie#readme"
+Repository = "https://github.com/fjlendinez/ronnie"
+Documentation = "https://fjlendinez.github.io/ronnie/"
+Changelog = "https://github.com/fjlendinez/ronnie/blob/main/CHANGELOG.md"
+Issues = "https://github.com/fjlendinez/ronnie/issues"
+PyPI = "https://pypi.org/project/python-ronnie/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ronnie"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [".github", "site", "engineering"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

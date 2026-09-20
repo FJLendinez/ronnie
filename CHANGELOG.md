@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — 0.1.0 feature-complete
+## [Unreleased]
+
+## [0.1.0] — 2026-09-20
 
 ### Added
 
@@ -54,3 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tasks**: `@task`/`.delay()`/`.call()`, brokers inline/thread/redis,
   `AsyncResult` (cache-backed), retries with backoff, `ronnie worker`/`beat`,
   TASKS_SCHEDULE intervals.
+
+[Unreleased]: https://github.com/fjlendinez/ronnie/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/fjlendinez/ronnie/releases/tag/v0.1.0

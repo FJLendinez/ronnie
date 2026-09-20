@@ -8,7 +8,7 @@ Usage::
 See PLAN.md for the full architecture.
 """
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.1.0"
 
 __all__ = ["__version__", "setup"]
 
