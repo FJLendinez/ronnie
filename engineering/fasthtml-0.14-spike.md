@@ -31,26 +31,31 @@ Verificado el 2026-09-19 contra `python-fasthtml==0.14.13` (Python 3.14).
   al subir de versión de FastHTML.
 
 
-## Derivation contract (ronnie.common)
+## Derivation contract (mirror architecture)
 
-`ronnie/common.py` is the canonical import surface for user code, deriving
-the **whole fasthtml package**:
+Ronnie mirrors the FT package module by module; user code imports only from
+`ronnie.*`:
 
-- `from fasthtml.common import *` provides the curated core; then every
-  other importable `fasthtml.*` submodule is walked (alphabetically,
-  `_`-prefixed and `_modidx` skipped) and its public names merged
-  first-wins — the curated surface keeps precedence. Submodules with
-  uninstalled optional dependencies (e.g. `stripe_otp` without `stripe`)
-  are skipped gracefully and reported by `derived_submodules()`.
-- Ronnie modules import **only** through `ronnie.common` (never fasthtml
-  directly).
-- Ronnie's `Router` explicitly shadows the ASGI `Router` re-exported by the
-  derived surface (bottom-import; safe because routing only needs names the
-  star import already binds).
-- Ronnie additions (`CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`, …)
-  resolve lazily via PEP 562 so `ronnie.common` imports no Ronnie packages
-  at module load — the import graph stays acyclic.
-- Contract tests (`tests/test_common.py`) pin: every public name of every
-  importable `fasthtml.*` submodule is available, lazy resolution, no
-  contrib imports at load time, and end-to-end behavior of handlers
-  (including SVG routes) written exclusively against `ronnie.common`.
+- **`ronnie.<name>` mirrors** (one per submodule: `components`, `svg`,
+  `pico`, `xtend`, `oauth`, `jupyter`, `live_reload`, `toaster`, `js`, `ft`,
+  `cli`, `basics`, `authmw`, `fastapp`, `starlette`, optional
+  `stripe_otp`): copy every public attribute of `fasthtml.<name>` into the
+  mirror (its `__all__` order first, then the remaining public namespace)
+  **and** define a PEP 562 `__getattr__` falling back to the source — the
+  source itself resolves some names lazily (e.g. `Titled` via
+  `fasthtml.components.__getattr__`), which `dir()` never shows.
+- **`ronnie.core`** merges the `fasthtml.core` derivation with Ronnie's own
+  submodules (`management`, `routing`, `checks`, `signing`, `passwords`,
+  `asgi`, `signals`) — no name collisions.
+- **`ronnie.common`** is curated, composed from Ronnie's own mirrors in the
+  source's composition order (starlette, fastcore.utils/xml, basics, authmw,
+  live_reload, toaster, js, fastapp) + `dataclass` parity, NOT a dump of the
+  whole package: `Card` lives in `ronnie.pico`, `Circle` in `ronnie.svg`.
+- Ronnie's `Router` shadows the ASGI `Router` the curated surface
+  re-exports (bottom import). Ronnie additions (`CsrfToken`, `csrf_exempt`,
+  `Alerts`, `HumanTime`) resolve lazily via PEP 562.
+- Contract tests (`tests/test_common.py`) pin: per-mirror parity for every
+  importable submodule (dir-level + lazy names), curated-common parity with
+  `fasthtml.common`, curated scope (no mirror-only names in common),
+  no contrib imports at load time, and e2e handlers using only Ronnie
+  imports (including SVG routes and Pico pages).

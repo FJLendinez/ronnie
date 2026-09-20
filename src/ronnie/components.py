@@ -1,15 +1,14 @@
-"""Ronnie core — mirrors ``fasthtml.core`` plus Ronnie's own primitives.
+"""Ronnie's mirror of ``fasthtml.components`` — direct derivation.
 
-Every public attribute of the underlying core module is re-exported
-(`FastHTML`, `APIRouter`, `to_xml`, response helpers, …), alongside Ronnie's
-submodules: `ronnie.core.management` (commands), `ronnie.core.routing`,
-`ronnie.core.checks`, `ronnie.core.signing`, `ronnie.core.passwords`,
-`ronnie.core.asgi` (the app factory), `ronnie.core.signals`.
+Exposes every public attribute of the source module: its ``__all__`` order
+first, then the rest of the public namespace, and any name the source
+resolves lazily (its own PEP 562 ``__getattr__``). Import from here instead
+of the underlying package.
 """
 
 from typing import Any
 
-import fasthtml.core as _source
+import fasthtml.components as _source
 
 _names = list(getattr(_source, "__all__", None) or [])
 _names += [n for n in dir(_source) if not n.startswith("_") and n not in _names]

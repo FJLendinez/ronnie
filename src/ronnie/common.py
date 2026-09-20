@@ -1,48 +1,44 @@
-"""Ronnie's canonical import surface.
+"""Ronnie's canonical curated import surface — the mirror of the FT common.
 
-Everything you need to write handlers — FT components (HTML and SVG),
-themes, OAuth clients, notebook helpers, response objects, app factories —
-is imported from here::
+`ronnie.common` is deliberately **curated**, exactly like its counterpart:
+the everyday vocabulary for handlers — components (`P`, `Titled`, `Form`,
+`Input`, …), app factories (`fast_app`, `serve`, `FastHTML`), responses
+(`Redirect`, `RedirectResponse`), request helpers and Ronnie's own additions
+(`Router`, `CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`)::
 
-    from ronnie.common import P, Titled, Redirect, serve, Card, Circle
+    from ronnie.common import P, Redirect, Router, Titled, serve
 
-This module derives the **entire** underlying FT package: every public name
-of every importable ``fasthtml.*`` submodule is re-exported (the curated
-``fasthtml.common`` surface first, then ``components``, ``core``, ``svg``,
-``pico``, ``xtend``, ``oauth``, ``jupyter``, ``live_reload``, ``cli`` and
-the rest; submodules whose optional dependencies are missing — e.g.
-``stripe_otp`` — are skipped). On top of that derivation Ronnie adds its own
-components and helpers (``Router``, ``CsrfToken``, ``csrf_exempt``,
-``Alerts``, ``HumanTime``, …), resolved lazily to keep the import graph
-acyclic. User code never imports ``fasthtml`` directly.
+Everything else lives in the per-module mirrors, each a direct derivation of
+its counterpart (`ronnie.core`, `ronnie.components`, `ronnie.svg`,
+`ronnie.pico`, `ronnie.xtend`, `ronnie.oauth`, `ronnie.jupyter`,
+`ronnie.live_reload`, `ronnie.toaster`, `ronnie.js`, `ronnie.ft`,
+`ronnie.cli`, `ronnie.basics`, `ronnie.authmw`, `ronnie.fastapp`,
+`ronnie.starlette`, `ronnie.stripe_otp`)::
+
+    from ronnie.pico import Card, Grid
+    from ronnie.svg import Circle, Svg
+    from ronnie.oauth import GitHubAppClient
+
+User code never imports ``fasthtml`` directly.
 """
 
 from __future__ import annotations
 
 import importlib as _importlib
-import pkgutil as _pkgutil
+from dataclasses import dataclass as dataclass
 from typing import Any
 
-import fasthtml as _fasthtml
-from fasthtml.common import *  # noqa: F403 - curated core of the derivation
+from fastcore.utils import *  # noqa: F403 - same derivation as the source
+from fastcore.xml import *  # noqa: F403
 
-#: Submodules successfully derived (introspection; ``_``-prefixed and
-#: optional-dependency modules excluded).
-_DERIVED_SUBMODULES: list[str] = ["common"]
-
-for _info in sorted(_pkgutil.iter_modules(_fasthtml.__path__), key=lambda m: m.name):
-    _name = _info.name
-    if _name.startswith("_") or _name == "common":
-        continue  # internals and the already-starred curated surface
-    try:
-        _module = _importlib.import_module(f"fasthtml.{_name}")
-    except ImportError:  # optional dependency not installed (e.g. stripe_otp)
-        continue
-    _DERIVED_SUBMODULES.append(_name)
-    for _attr in dir(_module):
-        if _attr.startswith("_") or _attr in globals():  # first wins: common rules
-            continue
-        globals()[_attr] = getattr(_module, _attr)
+# Composed from Ronnie's own mirrors, in the source composition order.
+from .authmw import *  # noqa: F403
+from .basics import *  # noqa: F403
+from .fastapp import *  # noqa: F403
+from .js import *  # noqa: F403
+from .live_reload import *  # noqa: F403
+from .starlette import *  # noqa: F403
+from .toaster import *  # noqa: F403
 
 __all__ = [name for name in globals() if not name.startswith("_")]
 
@@ -61,11 +57,6 @@ __all__ += list(_LAZY_EXPORTS)
 __all__.sort()
 
 
-def derived_submodules() -> list[str]:
-    """The fasthtml submodules this surface derives from, in order."""
-    return list(_DERIVED_SUBMODULES)
-
-
 def __getattr__(name: str) -> Any:
     """PEP 562: resolve Ronnie's own exports lazily."""
     module_path = _LAZY_EXPORTS.get(name)
@@ -82,5 +73,5 @@ def __dir__() -> list[str]:
 
 # Imported last: Ronnie's Router shadows the ASGI-level Router that the
 # derived surface re-exports. Safe because routing only needs names the star
-# import already bound (APIRouter, noop_body).
+# imports above already bound (APIRouter, noop_body).
 from .core.routing import Router as Router  # noqa: E402

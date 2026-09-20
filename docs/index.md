@@ -50,9 +50,10 @@ line.
 
 ## A ten-second tour
 
-Handlers are plain typed functions; every import comes from Ronnie's own
-`ronnie.common` surface — the entire FT package derived into one namespace
-(components, SVG, Pico, OAuth, responses) plus Ronnie's own helpers:
+Handlers are plain typed functions; imports come from Ronnie's own
+namespace, which mirrors the FT package module by module — `ronnie.common`
+for the curated everyday surface (`ronnie.pico`, `ronnie.svg`,
+`ronnie.oauth`, … for the rest) plus Ronnie's own helpers:
 
 ```python
 # apps/blog/routes.py

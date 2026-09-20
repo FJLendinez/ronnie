@@ -9,14 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`ronnie.common`**: the canonical import surface — the **entire FT
-  package** derived into one namespace: curated core (`P`, `Titled`, `Form`,
-  `Redirect`, `serve`, `fast_app`, responses, …) plus every other importable
-  submodule (`svg`, `pico`, `xtend`, `oauth`, `jupyter`, `live_reload`,
-  `cli`, core re-exports), extended with Ronnie's own `Router`,
-  `CsrfToken`, `csrf_exempt`, `Alerts` and `HumanTime`. Framework modules
-  and generated projects import exclusively from it; user code never
-  imports fasthtml. `derived_submodules()` reports the derivation set.
+- **Mirror import surfaces**: Ronnie mirrors the FT package module by
+  module — `ronnie.components`, `ronnie.svg`, `ronnie.pico`,
+  `ronnie.xtend`, `ronnie.oauth`, `ronnie.jupyter`, `ronnie.live_reload`,
+  `ronnie.toaster`, `ronnie.js`, `ronnie.ft`, `ronnie.cli`, `ronnie.basics`,
+  `ronnie.authmw`, `ronnie.fastapp`, `ronnie.starlette` and the optional
+  `ronnie.stripe_otp` — each a direct derivation exposing every public
+  attribute (including lazily-resolved names). `ronnie.core` merges the
+  engine derivation with Ronnie's own primitives. `ronnie.common` stays
+  **curated** (the everyday surface plus Ronnie's `Router`, `CsrfToken`,
+  `csrf_exempt`, `Alerts`, `HumanTime`). Framework modules and generated
+  projects import exclusively from the Ronnie namespace; user code never
+  imports fasthtml.
 - **Core**: LazySettings (`RONNIE_SETTINGS_MODULE`, callables, `override_settings`),
   app registry (`AppConfig`, 3-phase populate, per-app routes/tasks autodiscovery),
   system checks (`ronnie check [--deploy]`), signals.

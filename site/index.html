@@ -1160,9 +1160,10 @@ python<span class="w"> </span>manage.py<span class="w"> </span>runserver
 security headers and a working admin at <code>/admin/</code> — before you write a single
 line.</p>
 <h2 id="a-ten-second-tour">A ten-second tour<a class="headerlink" href="#a-ten-second-tour" title="Permanent link">&para;</a></h2>
-<p>Handlers are plain typed functions; every import comes from Ronnie's own
-<code>ronnie.common</code> surface — the entire FT package derived into one namespace
-(components, SVG, Pico, OAuth, responses) plus Ronnie's own helpers:</p>
+<p>Handlers are plain typed functions; imports come from Ronnie's own
+namespace, which mirrors the FT package module by module — <code>ronnie.common</code>
+for the curated everyday surface (<code>ronnie.pico</code>, <code>ronnie.svg</code>,
+<code>ronnie.oauth</code>, … for the rest) plus Ronnie's own helpers:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># apps/blog/routes.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">P</span><span class="p">,</span> <span class="n">Titled</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ronnie.core.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>

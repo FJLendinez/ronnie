@@ -6,24 +6,31 @@ built — there is no central URL table to maintain.
 
 ## The import surface
 
-All handler imports come from `ronnie.common`: the **entire underlying FT
-package** derived into one namespace — HTML components (`P`, `Titled`,
-`Form`, …), the full SVG set (`Svg`, `Circle`, `Rect`, …), Pico components
-(`Card`, `Grid`, `Group`, `DialogX`, …), sitemap builders (`Urlset`, `Url`),
-OAuth clients (`GitHubAppClient`, `GoogleAppClient`, `consent_url`), notebook
-helpers (`nb_serve`, `JupyUvi`), response objects (`Redirect`,
-`RedirectResponse`), app factories (`fast_app`, `serve`) — plus Ronnie's own
-additions (`Router`, `CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime`).
-Application code never imports the underlying stack directly — one
-namespace, one import line:
+Ronnie mirrors the underlying FT package module by module, so imports keep
+the shape you already know — under Ronnie's own namespace:
+
+| Mirror | Contents |
+|---|---|
+| `ronnie.common` | The curated everyday surface: components (`P`, `Titled`, `Form`, …), app factories (`fast_app`, `serve`), responses (`Redirect`), request helpers, plus Ronnie's `Router`, `CsrfToken`, `csrf_exempt`, `Alerts`, `HumanTime` |
+| `ronnie.core` | The engine: `FastHTML`, `APIRouter`, `to_xml`, response internals — merged with Ronnie's own core (`management`, `routing`, `checks`, `signing`, `passwords`, `asgi`, `signals`) |
+| `ronnie.components` | Every HTML component |
+| `ronnie.svg` | The full SVG component set (`Svg`, `Circle`, `Rect`, `Animate`, …) |
+| `ronnie.pico` | Pico components (`Card`, `Grid`, `Group`, `DialogX`, …) |
+| `ronnie.xtend` | Sitemap builders (`Urlset`, `Url`) and `use_kwargs` |
+| `ronnie.oauth` | OAuth clients (`GitHubAppClient`, `GoogleAppClient`, `consent_url`, …) |
+| `ronnie.jupyter`, `ronnie.live_reload`, `ronnie.toaster`, `ronnie.js`, `ronnie.ft`, `ronnie.cli`, `ronnie.basics`, `ronnie.authmw`, `ronnie.fastapp`, `ronnie.starlette` | Their exact counterparts |
+| `ronnie.stripe_otp` | Mirror of the optional module — derives nothing until `stripe` is installed |
 
 ```python
-from ronnie.common import Card, Circle, CsrfToken, Form, P, Redirect, Router, Titled
+from ronnie.common import P, Redirect, Router, Titled, serve
+from ronnie.pico import Card, Grid
+from ronnie.svg import Circle, Svg
 ```
 
-`ronnie.common.derived_submodules()` lists everything the surface derives
-from (submodules needing uninstalled optional dependencies are skipped
-gracefully).
+`ronnie.common` stays deliberately **curated** (module-specific vocabularies
+live in their mirrors), and every mirror derives every public attribute of
+its counterpart — including names resolved lazily. Application code never
+imports the underlying package directly.
 
 ## Declaring routes
 

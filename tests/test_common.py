@@ -1,4 +1,4 @@
-"""Tests for ronnie.common — the canonical import surface (full derivation)."""
+"""Tests for Ronnie's import surfaces: curated `ronnie.common` + per-module mirrors."""
 
 from __future__ import annotations
 
@@ -15,7 +15,6 @@ import ronnie.common as common
 
 
 def importable_fasthtml_submodules() -> list[str]:
-    """Every fasthtml submodule that imports cleanly (minus internals)."""
     names = []
     for info in pkgutil.iter_modules(fasthtml.__path__):
         if info.name.startswith("_"):
@@ -28,68 +27,87 @@ def importable_fasthtml_submodules() -> list[str]:
     return names
 
 
-class TestFullPackageDerivation:
+class TestModuleMirrors:
+    def test_mirror_exists_for_every_submodule(self):
+        for name in importable_fasthtml_submodules():
+            assert importlib.import_module(f"ronnie.{name}") is not None
+
     def test_every_public_name_of_every_submodule(self):
         missing: dict[str, list[str]] = {}
         for name in importable_fasthtml_submodules():
-            module = importlib.import_module(f"fasthtml.{name}")
-            gaps = [n for n in dir(module) if not n.startswith("_") and not hasattr(common, n)]
+            source = importlib.import_module(f"fasthtml.{name}")
+            mirror = importlib.import_module(f"ronnie.{name}")
+            gaps = [n for n in dir(source) if not n.startswith("_") and not hasattr(mirror, n)]
             if gaps:
                 missing[name] = gaps
         assert missing == {}, missing
 
-    def test_derived_submodules_matches_importable_set(self):
-        expected = {"common", *importable_fasthtml_submodules()}
-        assert set(common.derived_submodules()) == expected
+    def test_lazy_names_resolve_through_mirrors(self):
+        # The source resolves some names via PEP 562 (not in dir()); the
+        # mirrors must resolve them too.
+        components = importlib.import_module("ronnie.components")
+        for name in ("Titled", "Form", "P", "Main"):
+            assert hasattr(components, name), name
 
-    def test_svg_components_render(self):
-        xml = common.to_xml(common.Svg(common.Rect(width=10, height=10)))
+    def test_core_mirror_has_engine_names(self):
+        from ronnie.core import APIRouter, FastHTML, to_xml
+
+        assert callable(FastHTML) and callable(to_xml) and callable(APIRouter)
+
+    def test_core_mirror_keeps_ronnie_submodules(self):
+        from ronnie.core import asgi, checks, management, routing, signals  # noqa: F401
+
+    def test_svg_mirror_renders(self):
+        from ronnie.core import to_xml
+        from ronnie.svg import Circle, Rect, Svg
+
+        xml = to_xml(Svg(Rect(width=10, height=10)))
         assert xml.strip().startswith("<svg")
+        assert "<circle" in to_xml(Svg(Circle(r=5)))
 
-    def test_pico_components_render(self):
-        xml = common.to_xml(common.Card(common.P("hi")))
-        assert xml.strip().startswith("<article")
+    def test_pico_mirror_renders(self):
+        from ronnie.core import to_xml
+        from ronnie.pico import Card
 
-    def test_core_re_exports(self):
-        # Names that live in fasthtml.core but not in the curated common list.
-        for name in ("UUID", "Callable", "NAMESPACE_URL", "add_route"):
-            assert hasattr(common, name), name
+        assert to_xml(Card("hi")).strip().startswith("<article")
 
-    def test_spot_check_each_extra_submodule(self):
-        spot = {
-            "svg": ("Circle", "Rect", "Svg"),
-            "pico": ("Card", "Container", "DialogX", "Grid", "Group"),
-            "xtend": ("Urlset", "Url", "use_kwargs"),
-            "oauth": ("OAuth", "GitHubAppClient", "GoogleAppClient", "consent_url"),
-            "live_reload": ("LiveReloadJs", "live_reload_ws"),
-            "jupyter": ("JupyUvi", "nb_serve"),
-            "cli": ("railway_deploy", "call_parse"),
-        }
-        for names in spot.values():
-            for name in names:
-                assert hasattr(common, name), name
+    def test_oauth_and_helpers_mirrors(self):
+        from ronnie.jupyter import JupyUvi, nb_serve  # noqa: F401
+        from ronnie.live_reload import LiveReloadJs  # noqa: F401
+        from ronnie.oauth import GitHubAppClient, OAuth, consent_url  # noqa: F401
+        from ronnie.xtend import Urlset, use_kwargs  # noqa: F401
 
-    def test_optional_submodule_gracefully_skipped(self):
+    def test_optional_mirror_degrades_gracefully(self):
+        mirror = importlib.import_module("ronnie.stripe_otp")
         try:
             importlib.import_module("fasthtml.stripe_otp")
         except ImportError:
-            assert "stripe_otp" not in common.derived_submodules()
+            assert mirror.__all__ == []
         else:
-            assert "stripe_otp" in common.derived_submodules()
+            assert mirror.__all__ != []
 
-    def test_common_names_precedence(self):
-        # The curated surface wins over later submodules.
-        assert common.Redirect is fasthtml.common.Redirect
+    def test_star_import_from_mirror(self):
+        namespace: dict = {}
+        exec("from ronnie.svg import *", namespace)
+        assert "Circle" in namespace and "Svg" in namespace
 
 
-class TestDerivationBasics:
-    def test_every_public_fasthtml_common_name_is_available(self):
+class TestCuratedCommon:
+    def test_common_parity_with_source_common(self):
         missing = [
             name for name in dir(fasthtml.common) if not name.startswith("_") and not hasattr(common, name)
         ]
         assert missing == []
 
-    def test_core_names(self):
+    def test_common_is_curated_not_a_dump(self):
+        # Module-specific vocabularies live in their mirrors, not in common.
+        for name in ("Card", "Grid", "DialogX", "Circle", "Rect", "GitHubAppClient", "Urlset", "JupyUvi"):
+            assert not hasattr(common, name), name
+        # Svg comes from the XML core and is legitimately part of the
+        # curated surface — parity beats assumptions.
+        assert hasattr(common, "Svg")
+
+    def test_everyday_names(self):
         for name in (
             "FastHTML",
             "fast_app",
@@ -97,6 +115,7 @@ class TestDerivationBasics:
             "Redirect",
             "Titled",
             "P",
+            "Form",
             "Hidden",
             "HttpHeader",
             "to_xml",
@@ -107,6 +126,7 @@ class TestDerivationBasics:
             "Request",
             "Middleware",
             "StaticFiles",
+            "dataclass",
         ):
             assert hasattr(common, name), name
 
@@ -117,11 +137,6 @@ class TestDerivationBasics:
     def test_all_lists_everything(self):
         for name in common.__all__:
             assert hasattr(common, name), name
-
-    def test_dir_includes_lazy_names(self):
-        listing = dir(common)
-        for name in ("CsrfToken", "csrf_exempt", "Alerts", "HumanTime", "Router"):
-            assert name in listing
 
     def test_unknown_attribute_raises(self):
         with pytest.raises(AttributeError, match="no attribute 'nope'"):
@@ -157,8 +172,7 @@ class TestRonnieExports:
         assert common.Alerts is Alerts
         assert common.HumanTime is HumanTime
 
-    def test_lazy_import_does_not_pull_contrib_at_import_time(self):
-        # A fresh interpreter importing ronnie.common must not import contrib apps.
+    def test_common_import_pulls_no_contrib_at_load_time(self):
         code = (
             "import sys, ronnie.common; "
             "assert 'ronnie.contrib.messages' not in sys.modules, 'contrib loaded'; "
@@ -173,14 +187,12 @@ class TestRonnieExports:
     def test_star_import_resolves_lazy_names(self):
         namespace: dict = {}
         exec("from ronnie.common import *", namespace)
-        for name in ("Router", "CsrfToken", "csrf_exempt", "Alerts", "HumanTime", "P", "Card"):
+        for name in ("Router", "CsrfToken", "csrf_exempt", "Alerts", "HumanTime", "P"):
             assert name in namespace, name
 
 
 class TestSingleImportSurfaceE2E:
-    """A routes module written entirely against ronnie.common works end-to-end."""
-
-    def test_handler_using_only_ronnie_common(self):
+    def test_handler_using_only_ronnie_imports(self):
         from starlette.testclient import TestClient
 
         from ronnie.apps import apps
@@ -201,20 +213,19 @@ class TestSingleImportSurfaceE2E:
 
         with TestClient(get_asgi_application()) as client:
             assert "pages index" in client.get("/pages/").text
-            # CSRF helpers imported from common render into a real form page
             page = client.get("/pages/new").text
             assert "csrfmiddlewaretoken" in page
 
-    def test_svg_route_via_common(self, monkeypatch):
+    def test_svg_route_via_mirror(self, monkeypatch):
         import sys
         import types
 
         from starlette.testclient import TestClient
 
         from ronnie.apps import apps
-        from ronnie.common import Circle, Svg
+        from ronnie.common import Router
         from ronnie.conf import settings
-        from ronnie.core.routing import Router
+        from ronnie.svg import Circle, Svg
 
         graphics = Router("graphics")
 
@@ -222,11 +233,11 @@ class TestSingleImportSurfaceE2E:
         def badge():
             return Svg(Circle(r=5))
 
-        graphics_module = types.ModuleType("apps.graphics.routes")
-        graphics_module.rt = graphics
+        module = types.ModuleType("apps.graphics.routes")
+        module.rt = graphics
         graphics_pkg = types.ModuleType("apps.graphics")
         monkeypatch.setitem(sys.modules, "apps.graphics", graphics_pkg)
-        monkeypatch.setitem(sys.modules, "apps.graphics.routes", graphics_module)
+        monkeypatch.setitem(sys.modules, "apps.graphics.routes", module)
 
         settings.configure(
             SECRET_KEY="k",
@@ -244,3 +255,30 @@ class TestSingleImportSurfaceE2E:
         with TestClient(get_asgi_application()) as client:
             body = client.get("/graphics/badge").text
             assert "<svg" in body and "<circle" in body
+
+    def test_pico_component_in_real_page(self):
+        # The login page uses Card from the pico mirror.
+        from starlette.testclient import TestClient
+
+        from ronnie.apps import apps
+        from ronnie.conf import settings
+
+        settings.configure(
+            SECRET_KEY="k",
+            DEBUG=False,
+            ALLOWED_HOSTS=["testserver"],
+            INSTALLED_APPS=["apps.pages", "ronnie.contrib.sessions", "ronnie.contrib.auth"],
+            MIDDLEWARE=[
+                "ronnie.middleware.host.HostValidationMiddleware",
+                "ronnie.contrib.sessions.middleware.SessionMiddleware",
+                "ronnie.middleware.csrf.CsrfMiddleware",
+            ],
+        )
+        apps.clear_data()
+        import ronnie
+
+        ronnie.setup()
+        from ronnie.core.asgi import get_asgi_application
+
+        with TestClient(get_asgi_application()) as client:
+            assert "<article" in client.get("/accounts/login").text
