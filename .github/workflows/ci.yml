@@ -33,26 +33,26 @@ jobs:
         run: uv run mypy
       - name: Run tests
         run: uv run pytest -q
-      - name: Smoke: startproject → startapp → migrate → request
+      - name: "Smoke: startproject, startapp, migrate, request"
         if: matrix.python-version == '3.14'
         run: |
           uv pip install -e . -q
           ronnie startproject smokesite /tmp
           cd /tmp/smokesite
           ronnie startapp blog
-          python - <<'PY'
-          import os, re, sys
+          python -c "
+          import os, sys
+          sys.path.insert(0, '.')
+          os.environ.setdefault('RONNIE_SETTINGS_MODULE', 'config.settings')
           from pathlib import Path
-          sys.path.insert(0, ".")
-          os.environ["RONNIE_SETTINGS_MODULE"] = "config.settings"
-          settings = Path("config/settings.py")
-          settings.write_text(settings.read_text().replace('    # "apps.blog",', '    "apps.blog",'))
+          p = Path('config/settings.py')
+          p.write_text(p.read_text().replace('    # \"apps.blog\",', '    \"apps.blog\",'))
           from io import StringIO
           from ronnie.core.management import call_command
-          call_command("migrate", stdout=StringIO())
+          call_command('migrate', stdout=StringIO())
           from starlette.testclient import TestClient
           from config.asgi import application
-          with TestClient(application) as client:
-              assert client.get("/blog/").status_code == 200
-          print("smoke OK")
-          PY
+          client = TestClient(application)
+          assert client.get('/blog/').status_code == 200
+          print('smoke OK')
+          "
